@@ -4,14 +4,13 @@ using System.Text;
 using Npgsql;
 namespace KursuchServer;
 
-public class Server
+public class DatabaseFacade
 {
+    static DatabaseFacade Instance { get; } = new DatabaseFacade();
     String connectionString = "Host=localhost;Username=postgres;Password=E1!$;Database=postgres";
-    public Server()
+    private DatabaseFacade()
     {
-        //StartServer();
-        GetDrugData("Mephedrone");
-
+        
     }
     async void StartServer()
     {
@@ -88,7 +87,8 @@ public class Server
     async void CreateDrugTable()
     {
         await using var dataSource = NpgsqlDataSource.Create(connectionString);
-        await using (var cmd = dataSource.CreateCommand("CREATE TABLE DRUGS(\nName VARCHAR(255) not null primary key,\nConcentration INT\n);\n"))
+        await using (var cmd = 
+                     dataSource.CreateCommand("CREATE TABLE DRUGS(\nName VARCHAR(255) not null primary key,\nConcentration INT\n);\n"))
         {
             await cmd.ExecuteNonQueryAsync();
         }
@@ -98,7 +98,8 @@ public class Server
     async void CreateDiseaseTable()
     {
         await using var dataSource = NpgsqlDataSource.Create(connectionString);
-        await using (var cmd = dataSource.CreateCommand("CREATE TABLE DRUGS(\nName VARCHAR(255) not null primary key,\nConcentration INT\n);\n"))
+        await using (var cmd =
+                     dataSource.CreateCommand("CREATE TABLE DRUGS(\nName VARCHAR(255) not null primary key,\nConcentration INT\n);\n"))
         {
             await cmd.ExecuteNonQueryAsync();
         }

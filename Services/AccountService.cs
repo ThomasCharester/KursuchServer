@@ -4,7 +4,7 @@ namespace KursuchServer.Services;
 
 public class AccountService
 {
-    List<Client> clients = new();
+    private List<Client> _authorizedClients = new();
     
     private static AccountService instance = null;
     public static AccountService Instance
@@ -27,7 +27,7 @@ public class AccountService
         
     }
 
-    public void RegisterAccount(String adminKey, String login, String password) //
+    public void RegisterAccount(String login, String password) //
     {
         
     }
@@ -44,11 +44,11 @@ public class AccountService
     // TODO Абсолютно небезопасно, придумай метод защиты.
     public Client GetClient(String login)
     {
-        return clients.Find(x => x.Login == login);
+        return _authorizedClients.Find(x => x.Login == login);
     }
 
     public Client GetClient(TcpClient tcpClient)
     {
-        return clients.Find(x => x.Cocket == tcpClient);
+        return _authorizedClients.Find(x => x.Cocket == tcpClient);
     }
 }

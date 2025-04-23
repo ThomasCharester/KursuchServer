@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using KursuchServer.Services;
 
-
 namespace KursuchServer
 {
     class ServerApp
@@ -24,28 +23,34 @@ namespace KursuchServer
             private set { instance = value; }
         }
 
-        private ServerApp()
-        {
-            InitializeServices();
-        }
         static void Main(string[] args)
         {
-            ServerApp serverApp = new();
+            InitializeServices();
             
-            Account test  = new Account("TChar","*****","qwertyuiop");
-            //DatabaseService.Instance.AddAccount("qwertyuiop", test);
+            // Запускаем фоновую задачу
+            Instance._commandExecutionThread = new Thread(Instance.CommandTaskExecution);
+            Instance._commandExecutionThread.Start();
+            
+            TCPConnectorService.Instance.StartServer();
+            // Account test  = new Account("TChar","*****","qwertyuiop");
+            // DatabaseService.Instance.AddAccount("qwertyuiop", test);
+            // DatabaseService.Instance.AddAccount("qwertyuiop", test);
             // foreach (var acc in DatabaseService.Instance.GetAllAccounts().Result)
             // {
-            //     Console.WriteLine(acc);
+            //     Console.WriteLine(acc.AccountToString());
             // }
-            DatabaseService.Instance.GetAllAccounts();
+            // DatabaseService.Instance.GetAllAccounts();
             
-            Console.ReadKey();
+            // Console.ReadKey();
         }
 
         private void CommandTaskExecution()
         {
-            
+            while (true)
+            {
+                if(_commands.Count > 0) _commands.Dequeue().Execute();
+                else Thread.Sleep(100);
+            }
         }
 
         public void AddCommand(Command command)
@@ -53,7 +58,7 @@ namespace KursuchServer
             _commands.Enqueue(command);
         }
 
-        private void InitializeServices()
+        private static void InitializeServices()
         {
             StaticDataService.Instance.LoadServicesConfigs();
         }

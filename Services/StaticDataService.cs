@@ -20,7 +20,7 @@ public class StaticDataService
         if (File.Exists(configFileName)) { 
             string[] lines = File.ReadAllLines(configFileName);
 
-            var tcpService = new TCPConnectorService(lines[1], lines[2]);
+            var tcpService = new TCPConnectorService(lines[0], lines[1]);
             var databaseService = new DatabaseService(lines[2]);
             
         } 

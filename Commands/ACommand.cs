@@ -1,8 +1,8 @@
 namespace KursuchServer;
 
-public class TCPCommand
+public class ACommand: Command
 {
-    public TCPCommandType SubType;
+    public ACommandType SubType;
     
     public override void Execute()
     {

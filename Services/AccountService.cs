@@ -5,8 +5,9 @@ namespace KursuchServer.Services;
 public class AccountService
 {
     private List<Client> _authorizedClients = new();
-    
+
     private static AccountService instance = null;
+
     public static AccountService Instance
     {
         get
@@ -17,38 +18,92 @@ public class AccountService
         private set { instance = value; }
     }
 
-    public void Login(String login, String password) //
+    public void RequestLogin(ACommand data) //
     {
-        
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, data.Data, DBCommandType.CheckAccountData, LoginResult));
     }
 
-    public void Logout(String login) //
+    public void LoginResult(Object resultObj)
     {
-        
+        var result = (DBCommand)resultObj;
+
+        if (result.Data == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "lf;(",
+                TCPCommandType.SendDefaultMessage));
+            return;
+        }
+
+        _authorizedClients.Add(new(result.Data.StringToAccount(), result.Client));
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ls;)",
+            TCPCommandType.SendDefaultMessage));
     }
 
-    public void RegisterAccount(String login, String password) //
+    public void Logout(ACommand data) //
     {
-        
-    }
-    public void DeleteAccount(String adminKey, String login) //
-    {
-        
+        Client client = data.Data.StringToAccount().AccountToClient();
+        client.Cocket = data.Client;
+        _authorizedClients.Remove(client); // TODO Эффективность
+
+        ServerApp.Instance.AddCommand(new TCPCommand(data.Client, "lo;(",
+            TCPCommandType.SendDefaultMessage));
     }
 
-    public void SVCheats(String adminKey, String login, bool cheats) //
+    public void RequestRegister(ACommand data) //
     {
-        
-    }
-    
-    // TODO Абсолютно небезопасно, придумай метод защиты.
-    public Client GetClient(String login)
-    {
-        return _authorizedClients.Find(x => x.Login == login);
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountAdd, RegisterResult));
     }
 
-    public Client GetClient(TcpClient tcpClient)
+    public void RegisterResult(Object resultObj)
     {
-        return _authorizedClients.Find(x => x.Cocket == tcpClient);
+        var result = (DBCommand)resultObj;
+
+        if (result.Data == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;(",
+                TCPCommandType.SendDefaultMessage));
+            return;
+        }
+
+        _authorizedClients.Add(new(result.Data.StringToAccount(), result.Client));
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rs;)",
+            TCPCommandType.SendDefaultMessage));
+    }
+
+    public void RequestDelete(ACommand data) //
+    {
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountDelete, DeleteAccountResult));
+    }
+
+    public void DeleteAccountResult(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+
+        if (result.Data == "ERR")
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "df;Ошибка во время удаления",
+                TCPCommandType.SendDefaultMessage));
+        else
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ds;Запись удалена",
+                TCPCommandType.SendDefaultMessage));
+    }
+
+    public void SVCheats(ACommand data) //
+    {
+    }
+
+    // TODO Абсолютно небезопасно, ладно.
+    public Client? GetClient(String login)
+    {
+        Client temp = _authorizedClients.FirstOrDefault(x => x.Login == login);
+        return _authorizedClients.FirstOrDefault(x => x.Login == login).Login == null ? null : temp;
+    }
+
+    public Client? GetClient(TcpClient tcpClient)
+    {
+        Client temp = _authorizedClients.FirstOrDefault(x => x.Cocket == tcpClient);
+        return _authorizedClients.FirstOrDefault(x => x.Cocket == tcpClient).Login == null ? null : temp;
     }
 }

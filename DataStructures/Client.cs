@@ -18,4 +18,11 @@ public struct Client
         AdminKey = adminKey;
         Cocket = cocket;
     }
+    public Client(Account account, TcpClient cocket = null)
+    {
+        Login = account.Login;
+        Password = account.Password;
+        AdminKey = account.AdminKey;
+        Cocket = cocket;
+    }
 }

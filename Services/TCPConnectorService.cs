@@ -98,7 +98,7 @@ public class TCPConnectorService
             int bytesRead;
             bool loginAttempt = false;
 
-            while (_serverRunning && tcpClient.Connected)
+            while (IsClientConnected(tcpClient))
             {
                 if (stream.DataAvailable)
                 {
@@ -107,7 +107,7 @@ public class TCPConnectorService
 
                     string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine($"{tcpClient.Client.RemoteEndPoint}:{data}");
-                    if (!loginAttempt && data[0] == 'l')
+                    if (!loginAttempt)
                     {
                         switch (data[0])
                         {
@@ -120,22 +120,33 @@ public class TCPConnectorService
                                     ACommandType.AccountRegister));
                                 break;
                         }
-                        loginAttempt = true;
-                        continue;
                     }
+
+                    if (!AccountService.Instance.GetClient(tcpClient).HasValue)
+                        continue;
+
+                    loginAttempt = true;
 
                     switch (data[0])
                     {
                         case 'a':
                             switch (data[1])
                             {
-                                case 'a':
-                                    ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
-                                        DBCommandType.AccountAdd));
-                                    break;
+                                // case 'a':
+                                //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
+                                //         DBCommandType.AccountAdd));
+                                //     break;
                                 case 'm':
                                     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
-                                        DBCommandType.AccountGetAll));
+                                        DBCommandType.AccountGetAllAsString, SendToClient));
+                                    break;
+                                case 'd':
+                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
+                                        ACommandType.AccountDelete));
+                                    break;
+                                case 'o':
+                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
+                                        ACommandType.AccountLogout));
                                     break;
                             }
 
@@ -158,8 +169,8 @@ public class TCPConnectorService
             // {
             //     _connectedClients.Remove(tcpClient);
             // }
-            tcpClient.Close();
             Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
+            tcpClient.Close();
         }
     }
 
@@ -168,7 +179,47 @@ public class TCPConnectorService
         NetworkStream stream = data.Client.GetStream();
 
         // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes(data.Data);
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + '\n');
         stream.Write(responseData, 0, responseData.Length);
     }
+    public void SendToClient(Object dataObj) //
+    {
+        Command data = (Command)dataObj;
+        
+        NetworkStream stream = data.Client.GetStream();
+
+        // Отправляем ответ
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + '\n');
+        stream.Write(responseData, 0, responseData.Length);
+    }
+    public void KillClient(TCPCommand data) //
+    {
+        NetworkStream stream = data.Client.GetStream();
+
+        // Отправляем ответ
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + " is last words \n");
+        stream.Write(responseData, 0, responseData.Length);
+
+        data.Client.Close();
+    }
+    private bool IsClientConnected(TcpClient client)
+    {
+        if (!client.Connected) return false;
+
+        // Точная проверка состояния соединения
+        try
+        {
+            if (client.Client.Poll(0, SelectMode.SelectRead))
+            {
+                byte[] dummy = new byte[1];
+                return client.Client.Receive(dummy, SocketFlags.Peek) != 0;
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
 }

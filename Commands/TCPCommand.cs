@@ -10,8 +10,9 @@ public class TCPCommand : Command
     {
         Type = CommandType.TCPCommand;
     }
-    public TCPCommand(TcpClient tcpClient, String data, TCPCommandType subType)
+    public TCPCommand(TcpClient tcpClient, String data, TCPCommandType subType, Action<Object> outputFunc = null)
     {
+        OutputFunc = outputFunc;
         Type = CommandType.TCPCommand;
         Client = tcpClient;
         Data = data;
@@ -23,6 +24,9 @@ public class TCPCommand : Command
         {
             case TCPCommandType.SendDefaultMessage:
                 TCPConnectorService.Instance.SendToClient(this);
+                break;
+            case TCPCommandType.DisconnectClient:
+                TCPConnectorService.Instance.KillClient(this);
                 break;
         }
     }

@@ -21,7 +21,7 @@ public class DatabaseService
         _connectionString = connectionString;
     }
 
-    public async void AddAccount(Account account) //
+    public async Task<bool> AddAccount(Account account) //
     {
         try
         {
@@ -35,21 +35,34 @@ public class DatabaseService
                 cmd.Parameters.AddWithValue(account.AdminKey);
                 await cmd.ExecuteNonQueryAsync();
             }
+
+            return true;
         }
-        catch
+        catch(Exception ex)
         {
-            Console.WriteLine("Error when adding account");
+            Console.WriteLine("Error when adding account " + ex.Message);
+            return false;
         }
     }
 
-    public async void DeleteAccount(String login) //
+    public async Task<bool> DeleteAccount(String login) //
     {
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-        await using (var cmd = dataSource.CreateCommand("DELETE FROM Accounts WHERE login = $1;"))
+        try
         {
-            cmd.Parameters[0].Value = login;
-            await cmd.ExecuteNonQueryAsync();
+            // Если удалять несуществующую запись, то ошибки не будет
+            await using (var cmd = dataSource.CreateCommand("DELETE FROM Accounts WHERE login = $1;"))
+            {
+                cmd.Parameters.AddWithValue(login);
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            return true;
+        }
+        catch
+        {
+            Console.WriteLine("Error when deleting account");
+            return false;
         }
     }
 
@@ -88,6 +101,22 @@ public class DatabaseService
             while (await reader.ReadAsync())
             {
                 if(reader.GetString(0) == key) return true;
+            }
+        }
+        return false;
+    }
+    public async Task<bool> CheckAccountData(Account account)
+    {
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        await using (var cmd = dataSource.CreateCommand("SELECT login,password FROM Accounts"))
+        await using (var reader = await cmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                if(reader.GetString(0) == account.Login)
+                    if (reader.GetString(1) == account.Password) return true;
+                    else return false;
             }
         }
         return false;

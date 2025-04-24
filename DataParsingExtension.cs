@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace KursuchServer;
 
 public static class DataParsingExtension
@@ -20,5 +22,13 @@ public static class DataParsingExtension
     public static Account StringToAccount(this String account)
     {
         return new Account(account.Split('|')[0], account.Split('|')[1], account.Split('|')[2]);
+    }
+
+    public static String AccountsToString(this List<Account> accounts)
+    {
+        StringBuilder builder = new();
+        foreach (Account account in accounts)
+            builder.Append(account.AccountToString()+'\n');
+        return builder.ToString();
     }
 }

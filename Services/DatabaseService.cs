@@ -44,6 +44,35 @@ public class DatabaseService
             return false;
         }
     }
+    public async Task<bool> ModifyAccount(Command data) //
+    {
+        Account modifications = data.Data.StringToAccount();
+        Client accountToModify = AccountService.Instance.GetClient(data.Client).Value;
+        try
+        {
+            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+            await using (var cmd = dataSource.CreateCommand(
+                             "UPDATE Accounts SET login = $1, password = $2, adminKey = $3 WHERE login = $4;"))
+            {
+                cmd.Parameters.AddWithValue(modifications.Login);
+                cmd.Parameters.AddWithValue(modifications.Password);
+                cmd.Parameters.AddWithValue(modifications.AdminKey);
+                cmd.Parameters.AddWithValue(accountToModify.Login);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            accountToModify.Login = modifications.Login;
+            accountToModify.Password = modifications.Password;
+            accountToModify.AdminKey = modifications.AdminKey;
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Error when modifying account " + ex.Message);
+            return false;
+        }
+    }
 
     public async Task<bool> DeleteAccount(String login) //
     {

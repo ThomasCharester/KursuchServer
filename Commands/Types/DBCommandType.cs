@@ -7,6 +7,7 @@ public enum DBCommandType
     AccountGetAllAsString = 2,
     AccountAdd = 3,
     AccountDelete = 4,
-    CheckAdminKey = 5,
-    CheckAccountData = 6,
+    AccountModify = 5,
+    CheckAdminKey = 6,
+    CheckAccountData = 7,
 }

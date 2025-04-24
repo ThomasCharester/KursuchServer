@@ -23,52 +23,67 @@ public class DBCommand : Command
 
     public override void Execute()
     {
-        TCPCommand debugCommand = new TCPCommand();
-        debugCommand.Type = CommandType.TCPCommand;
-        debugCommand.SubType = TCPCommandType.SendDefaultMessage;
-        debugCommand.Client = Client;
-        debugCommand.Data = $"Запрос на {SubType} выполнен ";
-
-        switch (SubType)
+        try
         {
-            case DBCommandType.AccountAdd:
+            TCPCommand debugCommand = new TCPCommand();
+            debugCommand.Type = CommandType.TCPCommand;
+            debugCommand.SubType = TCPCommandType.SendDefaultMessage;
+            debugCommand.Client = Client;
+            debugCommand.Data = $"Запрос на {SubType} выполнен ";
+
+            switch (SubType)
             {
-                if(!DatabaseService.Instance.AddAccount(Data.StringToAccount()).Result) Data = "ERR";
+                case DBCommandType.AccountAdd:
+                {
+                    if (!DatabaseService.Instance.AddAccount(Data.StringToAccount()).Result) Data = "ERR";
 
-                OutputFunc(this);
+                    OutputFunc(this);
+                }
+                    break;
+                case DBCommandType.AccountDelete:
+                {
+                    if (!DatabaseService.Instance.DeleteAccount(Data.StringToAccount().Login).Result) Data = "ERR";
+
+                    OutputFunc(this);
+                }
+                    break;
+                case DBCommandType.AccountModify:
+                {
+                    if (!DatabaseService.Instance.ModifyAccount(this).Result) Data = "ERR";
+
+                    OutputFunc(this);
+                }
+                    break;
+
+                case DBCommandType.CheckAdminKey:
+                    OutputFunc(DatabaseService.Instance.CheckAdminKey(Data).Result);
+                    break;
+
+                case DBCommandType.AccountGetAll:
+                    OutputFunc(DatabaseService.Instance.GetAllAccounts().Result);
+                    break;
+
+                case DBCommandType.AccountGetAllAsString:
+                    Data = DatabaseService.Instance.GetAllAccounts().Result.AccountsToString();
+                    OutputFunc(this);
+                    break;
+
+                case DBCommandType.CheckAccountData:
+                {
+                    if (!DatabaseService.Instance.CheckAccountData(Data.StringToAccount()).Result) Data = "ERR";
+
+                    OutputFunc(this);
+                }
+                    break;
             }
-                break;
-            case DBCommandType.AccountDelete:
-            {
-                if(!DatabaseService.Instance.DeleteAccount(Data.StringToAccount().Login).Result) Data = "ERR";
 
-                OutputFunc(this);
-            }
-                break;
-
-            case DBCommandType.CheckAdminKey:
-                OutputFunc(DatabaseService.Instance.CheckAdminKey(Data).Result);
-                break;
-
-            case DBCommandType.AccountGetAll:
-                OutputFunc(DatabaseService.Instance.GetAllAccounts().Result);
-                break;
-            
-            case DBCommandType.AccountGetAllAsString:
-                Data = DatabaseService.Instance.GetAllAccounts().Result.AccountsToString();
-                OutputFunc(this);
-                break;
-
-            case DBCommandType.CheckAccountData:
-            {
-                if(!DatabaseService.Instance.CheckAccountData(Data.StringToAccount()).Result) Data = "ERR";
-                
-                OutputFunc(this);
-            }
-                break;
+            ServerApp.Instance.AddCommand(debugCommand);
         }
-
-        ServerApp.Instance.AddCommand(debugCommand);
+        catch (Exception ex)
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew;{ex.Message}",
+                TCPCommandType.SendDefaultMessage));
+        }
     }
 
     public override void Undo()

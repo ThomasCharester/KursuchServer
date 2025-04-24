@@ -136,7 +136,7 @@ public class TCPConnectorService
                                 //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
                                 //         DBCommandType.AccountAdd));
                                 //     break;
-                                case 'm':
+                                case 'g':
                                     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
                                         DBCommandType.AccountGetAllAsString, SendToClient));
                                     break;
@@ -147,6 +147,10 @@ public class TCPConnectorService
                                 case 'o':
                                     ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
                                         ACommandType.AccountLogout));
+                                    break;
+                                case 'm':
+                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
+                                        ACommandType.AccountModify));
                                     break;
                             }
 
@@ -169,7 +173,7 @@ public class TCPConnectorService
             // {
             //     _connectedClients.Remove(tcpClient);
             // }
-            Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
+            if(tcpClient.Connected) Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
             tcpClient.Close();
         }
     }
@@ -199,7 +203,8 @@ public class TCPConnectorService
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(data.Data + " is last words \n");
         stream.Write(responseData, 0, responseData.Length);
-
+        Console.WriteLine($"Клиент {data.Client.Client.RemoteEndPoint} отключен");
+        
         data.Client.Close();
     }
     private bool IsClientConnected(TcpClient client)

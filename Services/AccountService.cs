@@ -30,7 +30,7 @@ public class AccountService
 
         if (result.Data == "ERR")
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "lf;(",
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "lf;LE1;Неправильный логин или пароль",
                 TCPCommandType.SendDefaultMessage));
             return;
         }
@@ -48,7 +48,7 @@ public class AccountService
         _authorizedClients.Remove(client); // TODO Эффективность
 
         ServerApp.Instance.AddCommand(new TCPCommand(data.Client, "lo;(",
-            TCPCommandType.SendDefaultMessage));
+            TCPCommandType.DisconnectClient));
     }
 
     public void RequestRegister(ACommand data) //
@@ -62,7 +62,7 @@ public class AccountService
 
         if (result.Data == "ERR")
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;(",
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;re1;Аккаунт уже существует",
                 TCPCommandType.SendDefaultMessage));
             return;
         }
@@ -72,7 +72,25 @@ public class AccountService
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rs;)",
             TCPCommandType.SendDefaultMessage));
     }
+    public void RequestModify(ACommand data) //
+    {
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountModify, RegisterModify));
+    }
 
+    public void RegisterModify(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+
+        if (result.Data == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;am1;Аккаунта не существует",
+                TCPCommandType.SendDefaultMessage));
+            return;
+        }
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "am;s;Данные изменены успешно)",
+            TCPCommandType.SendDefaultMessage));
+    }
     public void RequestDelete(ACommand data) //
     {
         ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountDelete, DeleteAccountResult));
@@ -83,10 +101,10 @@ public class AccountService
         var result = (DBCommand)resultObj;
 
         if (result.Data == "ERR")
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "df;Ошибка во время удаления",
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "df;f;Ошибка во время удаления",
                 TCPCommandType.SendDefaultMessage));
         else
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ds;Запись удалена",
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ds;s;Запись удалена",
                 TCPCommandType.SendDefaultMessage));
     }
 

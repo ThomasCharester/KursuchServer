@@ -6,4 +6,5 @@ public enum ACommandType
     AccountLogout = 1,
     AccountRegister = 2,
     AccountDelete = 3,
+    AccountModify = 4,
 }

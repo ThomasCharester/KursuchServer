@@ -34,16 +34,26 @@ public class ACommand : Command
                     AccountService.Instance.RequestRegister(this);
                     break;
                 case ACommandType.AccountDelete:
+                {
                     var invoker = AccountService.Instance.GetClient(Client).Value;
-                    if (invoker.AdminKey == "Nan")
+                    if (invoker.AdminKey == "NAN")
                         throw new Exception("Читы не разрешены");
                     if (invoker.Login == Data.StringToAccount().Login)
                         throw new Exception("Себе в ногу не стреляем");
+                }
 
                     AccountService.Instance.RequestDelete(this);
                     break;
                 case ACommandType.AccountLogout:
                     AccountService.Instance.Logout(this);
+                    break;
+                case ACommandType.AccountModify:
+                {
+                    var invoker = AccountService.Instance.GetClient(Client).Value;
+                    if (invoker.AdminKey == "NAN")
+                        throw new Exception("Читы не разрешены");
+                    AccountService.Instance.RequestModify(this);
+                }
                     break;
             }
         }

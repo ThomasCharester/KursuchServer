@@ -126,36 +126,9 @@ public class TCPConnectorService
                         continue;
 
                     loginAttempt = true;
-
-                    switch (data[0])
-                    {
-                        case 'a':
-                            switch (data[1])
-                            {
-                                // case 'a':
-                                //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
-                                //         DBCommandType.AccountAdd));
-                                //     break;
-                                case 'g':
-                                    ServerApp.Instance.AddCommand(new DBCommand(tcpClient, data.Split(';')[1],
-                                        DBCommandType.AccountGetAllAsString, SendToClient));
-                                    break;
-                                case 'd':
-                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
-                                        ACommandType.AccountDelete));
-                                    break;
-                                case 'o':
-                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
-                                        ACommandType.AccountLogout));
-                                    break;
-                                case 'm':
-                                    ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
-                                        ACommandType.AccountModify));
-                                    break;
-                            }
-
-                            break;
-                    }
+                    
+                    UserRequestProcess(data, tcpClient);
+                    
                 }
                 else
                 {
@@ -178,6 +151,38 @@ public class TCPConnectorService
         }
     }
 
+    private void UserRequestProcess(String request, in TcpClient tcpClient)
+    {
+        switch (request[0])
+        {
+            case 'a':
+                switch (request[1])
+                {
+                    // case 'a':
+                    //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(';')[1],
+                    //         DBCommandType.AccountAdd));
+                    //     break;
+                    case 'g':
+                        ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(';')[1],
+                            DBCommandType.AccountGetAllAsString, SendToClient));
+                        break;
+                    case 'd':
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                            ACommandType.AccountDelete));
+                        break;
+                    case 'o':
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                            ACommandType.AccountLogout));
+                        break;
+                    case 'm':
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                            ACommandType.AccountModify));
+                        break;
+                }
+
+                break;
+        }
+    }
     public void SendToClient(TCPCommand data) //
     {
         NetworkStream stream = data.Client.GetStream();

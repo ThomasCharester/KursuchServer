@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using KursuchServer.DataStructures;
 using Npgsql;
 
 namespace KursuchServer.Services;

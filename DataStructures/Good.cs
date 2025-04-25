@@ -1,4 +1,4 @@
-namespace KursuchServer;
+namespace KursuchServer.DataStructures;
 
 public struct Good
 {

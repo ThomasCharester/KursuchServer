@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using KursuchServer.DataStructures;
 using Npgsql;
@@ -157,9 +158,12 @@ public class DatabaseService
                 while (await reader.ReadAsync())
                 {
                     for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        builder.Append(reader.GetString(i) + ',');
-                    }
+                        if (reader.GetFieldType(i) == typeof(string))
+                            builder.Append(reader.GetString(i) + ',');
+                        else if (reader.GetFieldType(i) == typeof(int))
+                            builder.Append(reader.GetInt32(i).ToString() + ',');
+                        else if (reader.GetFieldType(i) == typeof(bool))
+                            builder.Append(reader.GetBoolean(i).ToString() + ',');
 
                     builder.Remove(builder.Length - 1, 1);
 
@@ -174,6 +178,7 @@ public class DatabaseService
 
     public async Task<String> GetValueAnyTable(String query) //
     {
+        StringBuilder value = new();
         var condition =
             BuildSQLCondition(
                 query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
@@ -188,10 +193,21 @@ public class DatabaseService
             {
                 while (await reader.ReadAsync())
                 {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                        if (reader.GetFieldType(i) == typeof(string))
+                            value.Append(reader.GetString(i) + ',');
+                        else if (reader.GetFieldType(i) == typeof(int))
+                            value.Append(reader.GetInt32(i).ToString() + ',');
+                        else if (reader.GetFieldType(i) == typeof(bool))
+                            value.Append(reader.GetBoolean(i).ToString() + ',');
+                    
+                    value.Remove(value.Length - 1, 1);
+                    return value.ToString();
                 }
             }
         }
 
+        query = "ERR";
         return query;
     }
 

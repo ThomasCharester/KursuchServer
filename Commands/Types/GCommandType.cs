@@ -14,6 +14,7 @@ public enum GCommandType
     SellerGetAll,
     AquireTypeAdd,
     AquireTypeDelete,
+    AquireTypeModify,
     AquireTypeGet,
     AquireTypeGetAll,
     PaymentMethodAdd,
@@ -24,4 +25,6 @@ public enum GCommandType
     GameDelete,
     GameGet,
     GameGetAll,
+    GameModify,
+    PaymentMethodModify
 }

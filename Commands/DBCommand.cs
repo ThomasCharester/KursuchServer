@@ -53,6 +53,11 @@ public class DBCommand : Command
                     Output = DatabaseService.Instance.GetRowsOfAnyTable(Query).Result;
                 }
                     break;
+                case DBCommandType.ValueGet:
+                {
+                    Output = DatabaseService.Instance.GetValueAnyTable(Query).Result;
+                }
+                    break;
 
                 case DBCommandType.CheckData:
                 {

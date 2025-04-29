@@ -7,12 +7,12 @@ public class ACommand : Command
 {
     public ACommandType SubType;
 
-    public ACommand(TcpClient tcpClient, String data, ACommandType subType, Action<Object> outputFunc = null)
+    public ACommand(TcpClient tcpClient, String query, ACommandType subType, Action<Object> outputFunc = null)
     {
         OutputFunc = outputFunc;
         Type = CommandType.ACommand;
         Client = tcpClient;
-        Data = data;
+        Query = query;
         SubType = subType;
     }
 
@@ -36,13 +36,18 @@ public class ACommand : Command
                 case ACommandType.AccountDelete:
                 {
                     var invoker = AccountService.Instance.GetClient(Client).Value;
+
+                    var toDelete = Query.StringToAccount();
                     if (invoker.AdminKey == "NAN")
                         throw new Exception("Читы не разрешены");
-                    if (invoker.Login == Data.StringToAccount().Login)
+                    if (invoker.Login == toDelete.Login)
                         throw new Exception("Себе в ногу не стреляем");
-                }
-
+                    if (AccountService.Instance.GetClient(toDelete.Login).HasValue)
+                        throw new Exception("Пользователь ещё в сети");
+                    
+                    Query = toDelete.Login;
                     AccountService.Instance.RequestDelete(this);
+                }
                     break;
                 case ACommandType.AccountLogout:
                     AccountService.Instance.Logout(this);
@@ -55,12 +60,18 @@ public class ACommand : Command
                     AccountService.Instance.RequestModify(this);
                 }
                     break;
+                case ACommandType.AccountModifySelf:
+                {
+                    var invoker = AccountService.Instance.GetClient(Client).Value;
+                    AccountService.Instance.RequestModifySelf(this);
+                }
+                    break;
             }
         }
         catch (Exception ex)
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew;{ex.Message}",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew{DataParsingExtension.QuerySplitter}{ex.Message}",
+                TCPCommandType.SendSingleValue));
         }
     }
 

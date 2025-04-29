@@ -112,11 +112,13 @@ public class TCPConnectorService
                         switch (data[0])
                         {
                             case 'l':
-                                ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    data.Split(DataParsingExtension.QuerySplitter)[1],
                                     ACommandType.AccountLogin));
                                 break;
                             case 'r':
-                                ServerApp.Instance.AddCommand(new ACommand(tcpClient, data.Split(';')[1],
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    data.Split(DataParsingExtension.QuerySplitter)[1],
                                     ACommandType.AccountRegister));
                                 break;
                         }
@@ -126,9 +128,8 @@ public class TCPConnectorService
                         continue;
 
                     loginAttempt = true;
-                    
+
                     UserRequestProcess(data, tcpClient);
-                    
                 }
                 else
                 {
@@ -146,7 +147,7 @@ public class TCPConnectorService
             // {
             //     _connectedClients.Remove(tcpClient);
             // }
-            if(tcpClient.Connected) Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
+            if (tcpClient.Connected) Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
             tcpClient.Close();
         }
     }
@@ -159,23 +160,32 @@ public class TCPConnectorService
                 switch (request[1])
                 {
                     // case 'a':
-                    //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(';')[1],
+                    //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(DataParsingExtension.QuerySplitter)[1],
                     //         DBCommandType.AccountAdd));
                     //     break;
                     case 'g':
-                        ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(';')[1],
-                            DBCommandType.AccountGetAllAsString, SendToClient));
+                        ServerApp.Instance.AddCommand(new DBCommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                            DBCommandType.ValueGetAll, SendMultipleValue));
                         break;
                     case 'd':
-                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
                             ACommandType.AccountDelete));
                         break;
                     case 'o':
-                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
                             ACommandType.AccountLogout));
                         break;
+                    case 's':
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                            ACommandType.AccountModifySelf));
+                        break;
                     case 'm':
-                        ServerApp.Instance.AddCommand(new ACommand(tcpClient, request.Split(';')[1],
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
                             ACommandType.AccountModify));
                         break;
                 }
@@ -183,35 +193,55 @@ public class TCPConnectorService
                 break;
         }
     }
-    public void SendToClient(TCPCommand data) //
+
+    public void SendSingleValue(TCPCommand data) //
     {
         NetworkStream stream = data.Client.GetStream();
 
         // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + '\n');
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Query + '\n');
         stream.Write(responseData, 0, responseData.Length);
     }
-    public void SendToClient(Object dataObj) //
+
+    public void SendSingleValue(Object dataObj) //
     {
         Command data = (Command)dataObj;
-        
+
         NetworkStream stream = data.Client.GetStream();
 
         // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + '\n');
+        byte[] responseData = Encoding.UTF8.GetBytes((String)data.Output + '\n');
         stream.Write(responseData, 0, responseData.Length);
     }
+
+    public void SendMultipleValue(Object dataObj) //
+    {
+        Command data = (Command)dataObj;
+
+        NetworkStream stream = data.Client.GetStream();
+
+        StringBuilder builder = new();
+
+        foreach (var value in (List<String>)data.Output)
+            builder.Append(value + '\n');
+
+        // Отправляем ответ
+        byte[] responseData = Encoding.UTF8.GetBytes(builder.ToString());
+        stream.Write(responseData, 0, responseData.Length);
+    }
+
     public void KillClient(TCPCommand data) //
     {
         NetworkStream stream = data.Client.GetStream();
 
         // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes(data.Data + " is last words \n");
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Query + " is last words \n");
         stream.Write(responseData, 0, responseData.Length);
         Console.WriteLine($"Клиент {data.Client.Client.RemoteEndPoint} отключен");
-        
+
         data.Client.Close();
     }
+
     private bool IsClientConnected(TcpClient client)
     {
         if (!client.Connected) return false;
@@ -224,6 +254,7 @@ public class TCPConnectorService
                 byte[] dummy = new byte[1];
                 return client.Client.Receive(dummy, SocketFlags.Peek) != 0;
             }
+
             return true;
         }
         catch
@@ -231,5 +262,4 @@ public class TCPConnectorService
             return false;
         }
     }
-
 }

@@ -12,12 +12,12 @@ public class TCPCommand : Command
         Type = CommandType.TCPCommand;
     }
 
-    public TCPCommand(TcpClient tcpClient, String data, TCPCommandType subType, Action<Object> outputFunc = null)
+    public TCPCommand(TcpClient tcpClient, String query, TCPCommandType subType, Action<Object> outputFunc = null)
     {
         OutputFunc = outputFunc;
         Type = CommandType.TCPCommand;
         Client = tcpClient;
-        Data = data;
+        Query = query;
         SubType = subType;
     }
 
@@ -27,8 +27,11 @@ public class TCPCommand : Command
         {
             switch (SubType)
             {
-                case TCPCommandType.SendDefaultMessage:
-                    TCPConnectorService.Instance.SendToClient(this);
+                case TCPCommandType.SendSingleValue:
+                    TCPConnectorService.Instance.SendSingleValue(this);
+                    break;
+                case TCPCommandType.SendMultipleValue:
+                    TCPConnectorService.Instance.SendMultipleValue(this);
                     break;
                 case TCPCommandType.DisconnectClient:
                     TCPConnectorService.Instance.KillClient(this);
@@ -37,8 +40,8 @@ public class TCPCommand : Command
         }
         catch (Exception ex)
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew;{ex.Message}",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew{DataParsingExtension.QuerySplitter}{ex.Message}",
+                TCPCommandType.SendSingleValue));
         }
     }
 

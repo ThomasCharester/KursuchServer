@@ -12,12 +12,12 @@ public class DBCommand : Command
         Type = CommandType.DBCommand;
     }
 
-    public DBCommand(TcpClient tcpClient, String data, DBCommandType subType, Action<Object> outputFunc = null)
+    public DBCommand(TcpClient tcpClient, String query, DBCommandType subType, Action<Object> outputFunc = null)
     {
         OutputFunc = outputFunc;
         Type = CommandType.DBCommand;
         Client = tcpClient;
-        Data = data;
+        Query = query;
         SubType = subType;
     }
 
@@ -27,62 +27,47 @@ public class DBCommand : Command
         {
             TCPCommand debugCommand = new TCPCommand();
             debugCommand.Type = CommandType.TCPCommand;
-            debugCommand.SubType = TCPCommandType.SendDefaultMessage;
+            debugCommand.SubType = TCPCommandType.SendSingleValue;
             debugCommand.Client = Client;
-            debugCommand.Data = $"Запрос на {SubType} выполнен ";
-
+            debugCommand.Query = $"Запрос на {SubType} выполнен ";
             switch (SubType)
             {
-                case DBCommandType.AccountAdd:
+                case DBCommandType.ValueAdd:
                 {
-                    if (!DatabaseService.Instance.AddAccount(Data.StringToAccount()).Result) Data = "ERR";
-
-                    OutputFunc(this);
+                    if (!DatabaseService.Instance.AddValueToAnyTable(Query).Result) Query = "ERR";
                 }
                     break;
-                case DBCommandType.AccountDelete:
+                case DBCommandType.ValueDelete:
                 {
-                    if (!DatabaseService.Instance.DeleteAccount(Data.StringToAccount().Login).Result) Data = "ERR";
-
-                    OutputFunc(this);
+                    if (!DatabaseService.Instance.DeleteValueFromAnyTable(Query).Result) Query = "ERR";
                 }
                     break;
-                case DBCommandType.AccountModify:
+                case DBCommandType.ValueModify:
                 {
-                    if (!DatabaseService.Instance.ModifyAccount(this).Result) Data = "ERR";
-
-                    OutputFunc(this);
+                    if (!DatabaseService.Instance.ModifyValueAnyTable(Query).Result) Query = "ERR";
                 }
                     break;
 
-                case DBCommandType.CheckAdminKey:
-                    OutputFunc(DatabaseService.Instance.CheckAdminKey(Data).Result);
-                    break;
-
-                case DBCommandType.AccountGetAll:
-                    OutputFunc(DatabaseService.Instance.GetAllAccounts().Result);
-                    break;
-
-                case DBCommandType.AccountGetAllAsString:
-                    Data = DatabaseService.Instance.GetAllAccounts().Result.AccountsToString();
-                    OutputFunc(this);
-                    break;
-
-                case DBCommandType.CheckAccountData:
+                case DBCommandType.ValueGetAll:
                 {
-                    if (!DatabaseService.Instance.CheckAccountData(Data.StringToAccount()).Result) Data = "ERR";
+                    Output = DatabaseService.Instance.GetRowsOfAnyTable(Query).Result;
+                }
+                    break;
 
-                    OutputFunc(this);
+                case DBCommandType.CheckData:
+                {
+                    if (!DatabaseService.Instance.CheckDataAnyTable(Query).Result) Query = "ERR";
                 }
                     break;
             }
+            OutputFunc(this);
 
             ServerApp.Instance.AddCommand(debugCommand);
         }
         catch (Exception ex)
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew;{ex.Message}",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(Client, $"ew{DataParsingExtension.QuerySplitter}{ex.Message}",
+                TCPCommandType.SendSingleValue));
         }
     }
 

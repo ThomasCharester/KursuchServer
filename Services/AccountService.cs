@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using KursuchServer.DataStructures;
 
 namespace KursuchServer.Services;
 
@@ -21,91 +22,130 @@ public class AccountService
     public void RequestLogin(ACommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Data, DBCommandType.CheckAccountData, LoginResult));
+            new DBCommand(data.Client, data.Query + ";login,password,adminKey;Accounts", DBCommandType.CheckData,
+                LoginResult));
     }
 
     public void LoginResult(Object resultObj)
     {
         var result = (DBCommand)resultObj;
 
-        if (result.Data == "ERR")
+        if (result.Query == "ERR")
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "lf;LE1;Неправильный логин или пароль",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"lf{DataParsingExtension.QuerySplitter}LE1{DataParsingExtension.QuerySplitter}Неправильный логин или пароль",
+                TCPCommandType.SendSingleValue));
             return;
         }
 
-        _authorizedClients.Add(new(result.Data.StringToAccount(), result.Client));
+        result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
 
-        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ls;)",
-            TCPCommandType.SendDefaultMessage));
+        _authorizedClients.Add(new(result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount(), result.Client));
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            $"ls{DataParsingExtension.QuerySplitter} {result.Query}",
+            TCPCommandType.SendSingleValue));
     }
 
     public void Logout(ACommand data) //
     {
-        Client client = data.Data.StringToAccount().AccountToClient();
-        client.Cocket = data.Client;
-        _authorizedClients.Remove(client); // TODO Эффективность
+        Client client = new(data.Query.StringToAccount(), data.Client);
 
-        ServerApp.Instance.AddCommand(new TCPCommand(data.Client, "lo;(",
+        _authorizedClients.Remove(_authorizedClients.First(x => x.Login == client.Login));
+
+        ServerApp.Instance.AddCommand(new TCPCommand(data.Client, $"lo{DataParsingExtension.QuerySplitter}(",
             TCPCommandType.DisconnectClient));
     }
 
     public void RequestRegister(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountAdd, RegisterResult));
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + ";login,password,adminKey;Accounts",
+            DBCommandType.ValueAdd, RegisterResult));
     }
 
     public void RegisterResult(Object resultObj)
     {
         var result = (DBCommand)resultObj;
 
-        if (result.Data == "ERR")
+        if (result.Query == "ERR")
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;re1;Аккаунт уже существует",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"rf{DataParsingExtension.QuerySplitter}re1{DataParsingExtension.QuerySplitter}Аккаунт уже существует",
+                TCPCommandType.SendSingleValue));
             return;
         }
 
-        _authorizedClients.Add(new(result.Data.StringToAccount(), result.Client));
+        result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
 
-        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rs;)",
-            TCPCommandType.SendDefaultMessage));
+        _authorizedClients.Add(new(result.Query.StringToAccount(), result.Client));
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, $"rs{DataParsingExtension.QuerySplitter})",
+            TCPCommandType.SendSingleValue));
     }
+
     public void RequestModify(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountModify, RegisterModify));
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                ";login,password,adminKey;Accounts;" +
+                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1], DBCommandType.ValueModify,
+                RegisterModify));
+    }
+
+    public void RequestModifySelf(ACommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query + ";login,password,adminKey;Accounts;" + GetClient(data.Client).Value.ClientToStringDB(),
+                DBCommandType.ValueModify, RegisterModify));
     }
 
     public void RegisterModify(Object resultObj)
     {
         var result = (DBCommand)resultObj;
 
-        if (result.Data == "ERR")
+        if (result.Query == "ERR")
         {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "rf;am1;Аккаунта не существует",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"rf{DataParsingExtension.QuerySplitter}am1{DataParsingExtension.QuerySplitter}Аккаунта не существует",
+                TCPCommandType.SendSingleValue));
             return;
         }
 
-        ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "am;s;Данные изменены успешно)",
-            TCPCommandType.SendDefaultMessage));
+        Client modifyMe = GetClient(result.Query.Split(DataParsingExtension.QuerySplitter)[3]
+            .Split(DataParsingExtension.ValueSplitter)[0]).Value;
+        
+        Account modifiers = result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount();
+        
+        modifyMe.Login = modifiers.Login;
+        modifyMe.Password = modifiers.Password;
+        modifyMe.AdminKey = modifiers.AdminKey;
+        
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            $"am{DataParsingExtension.QuerySplitter}s{DataParsingExtension.QuerySplitter}Данные изменены успешно)",
+            TCPCommandType.SendSingleValue));
     }
+
     public void RequestDelete(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Data, DBCommandType.AccountDelete, DeleteAccountResult));
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + ";login;Accounts",
+            DBCommandType.ValueDelete,
+            DeleteAccountResult));
     }
 
     public void DeleteAccountResult(Object resultObj)
     {
         var result = (DBCommand)resultObj;
 
-        if (result.Data == "ERR")
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "df;f;Ошибка во время удаления",
-                TCPCommandType.SendDefaultMessage));
+        if (result.Query == "ERR")
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"df{DataParsingExtension.QuerySplitter}f{DataParsingExtension.QuerySplitter}Ошибка во время удаления",
+                TCPCommandType.SendSingleValue));
         else
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client, "ds;s;Запись удалена",
-                TCPCommandType.SendDefaultMessage));
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"ds{DataParsingExtension.QuerySplitter}s{DataParsingExtension.QuerySplitter}Запись удалена",
+                TCPCommandType.SendSingleValue));
     }
 
     public void SVCheats(ACommand data) //

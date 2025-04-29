@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Text;
 using KursuchServer.DataStructures;
 using Npgsql;
 
@@ -22,133 +23,263 @@ public class DatabaseService
         _connectionString = connectionString;
     }
 
-    public async Task<bool> AddAccount(Account account) //
+    // 3 старые данные, 2 таблица, 1 колонки, 0 новые данные
+    public async Task<bool> ModifyValueAnyTable(String query)
     {
         try
         {
             await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
+            var condition1 =
+                BuildSQLSequence(
+                    query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
+                    query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+
+            var condition2 =
+                BuildSQLCondition(
+                    query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
+                    query.Split(DataParsingExtension.QuerySplitter)[3].Split(DataParsingExtension.ValueSplitter));
+
             await using (var cmd = dataSource.CreateCommand(
-                             "INSERT INTO Accounts (login,password,adminKey) VALUES ($1,$2,$3);"))
+                             $"UPDATE {query.Split(DataParsingExtension.QuerySplitter)[2]} SET {condition1} WHERE {condition2}"))
             {
-                cmd.Parameters.AddWithValue(account.Login);
-                cmd.Parameters.AddWithValue(account.Password);
-                cmd.Parameters.AddWithValue(account.AdminKey);
                 await cmd.ExecuteNonQueryAsync();
             }
 
             return true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine("Error when adding account " + ex.Message);
+            Console.WriteLine("Error when modifying data " + ex.Message);
             return false;
         }
     }
-    public async Task<bool> ModifyAccount(Command data) //
+
+    public async Task<bool> CheckDataAnyTable(String tableName, String data, String columns = "*")
     {
-        Account modifications = data.Data.StringToAccount();
-        Client accountToModify = AccountService.Instance.GetClient(data.Client).Value;
-        try
-        {
-            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
-            await using (var cmd = dataSource.CreateCommand(
-                             "UPDATE Accounts SET login = $1, password = $2, adminKey = $3 WHERE login = $4;"))
-            {
-                cmd.Parameters.AddWithValue(modifications.Login);
-                cmd.Parameters.AddWithValue(modifications.Password);
-                cmd.Parameters.AddWithValue(modifications.AdminKey);
-                cmd.Parameters.AddWithValue(accountToModify.Login);
-                await cmd.ExecuteNonQueryAsync();
-            }
-            accountToModify.Login = modifications.Login;
-            accountToModify.Password = modifications.Password;
-            accountToModify.AdminKey = modifications.AdminKey;
-            
-            return true;
-        }
-        catch(Exception ex)
+        StringBuilder condition = new();
+
+        var columnNames = columns.Split(',');
+        var dataToCheck = data.Split(',');
+
+        for (int i = 0; i < dataToCheck.Length; i++)
+            condition.Append(columnNames[i] + " = " + dataToCheck[i]);
+
+        await using (var cmd = dataSource.CreateCommand($"SELECT {columns} FROM {tableName} WHERE {condition}"))
+        await using (var reader = await cmd.ExecuteReaderAsync())
         {
-            Console.WriteLine("Error when modifying account " + ex.Message);
-            return false;
+            return reader.HasRows;
         }
     }
 
-    public async Task<bool> DeleteAccount(String login) //
+    public async Task<bool> CheckDataAnyTable(String query)
+    {
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        var condition =
+            BuildSQLCondition(
+                query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
+                query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+
+        await using (var cmd = dataSource.CreateCommand(
+                         $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]} FROM {query.Split(DataParsingExtension.QuerySplitter)[2]} WHERE {condition}"))
+        await using (var reader = await cmd.ExecuteReaderAsync())
+        {
+            return reader.HasRows;
+        }
+    }
+
+    private static StringBuilder BuildSQLCondition(in string[] columnNames, in string[] dataToCheck)
+    {
+        string query;
+        StringBuilder condition = new();
+
+        for (int i = 0; i < dataToCheck.Length; i++)
+            condition.Append(columnNames[i] + " = " + dataToCheck[i] + " AND ");
+
+        condition.Remove(condition.Length - 5, 5);
+        return condition;
+    }
+
+    private static StringBuilder BuildSQLSequence(in string[] columnNames, in string[] dataToCheck)
+    {
+        string query;
+        StringBuilder condition = new();
+
+        for (int i = 0; i < dataToCheck.Length; i++)
+            condition.Append(columnNames[i] + " = " + dataToCheck[i] + ",");
+
+        condition.Remove(condition.Length - 1, 1);
+        return condition;
+    }
+
+    public async Task<List<String>> GetRowsOfAnyTable(String tableName, String columns) //
+    {
+        List<String> items = new();
+        StringBuilder builder = new();
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        await using (var cmd = dataSource.CreateCommand($"SELECT {columns} FROM {tableName}"))
+        {
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        builder.Append(reader.GetString(i) + ',');
+                    }
+
+                    builder.Remove(builder.Length - 1, 1);
+
+                    items.Add(builder.ToString());
+                    builder.Clear();
+                }
+            }
+        }
+
+        return items;
+    }
+
+    public async Task<List<String>> GetRowsOfAnyTable(String query) //
+    {
+        List<String> items = new();
+        StringBuilder builder = new();
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        await using (var cmd = dataSource.CreateCommand(
+                         $"SELECT {query.Split(DataParsingExtension.ValueSplitter)[0]} FROM {query.Split(DataParsingExtension.ValueSplitter)[1]}"))
+        {
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        builder.Append(reader.GetString(i) + ',');
+                    }
+
+                    builder.Remove(builder.Length - 1, 1);
+
+                    items.Add(builder.ToString());
+                    builder.Clear();
+                }
+            }
+        }
+
+        return items;
+    }
+
+    public async Task<String> GetValueAnyTable(String query) //
+    {
+        var condition =
+            BuildSQLCondition(
+                query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
+                query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        await using (var cmd = dataSource.CreateCommand(
+                         $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]} FROM {query.Split(DataParsingExtension.ValueSplitter)[2]} WHERE {condition}"))
+        {
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                }
+            }
+        }
+
+        return query;
+    }
+
+    public async Task<bool> DeleteValueFromAnyTable(String tableName, String condition) //
     {
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
         try
         {
             // Если удалять несуществующую запись, то ошибки не будет
-            await using (var cmd = dataSource.CreateCommand("DELETE FROM Accounts WHERE login = $1;"))
+            await using (var cmd = dataSource.CreateCommand($"DELETE FROM {tableName} WHERE {condition};"))
             {
-                cmd.Parameters.AddWithValue(login);
                 await cmd.ExecuteNonQueryAsync();
             }
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            Console.WriteLine("Error when deleting account");
+            Console.WriteLine($"ew;{ex.Message}");
             return false;
         }
     }
 
-    public async Task<List<Account>> GetAllAccounts() //
+    public async Task<bool> DeleteValueFromAnyTable(String query) //
     {
-        List<Account> accounts = new();
+        var condition =
+            BuildSQLCondition(
+                query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
+                query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-        await using (var cmd = dataSource.CreateCommand("SELECT * FROM Accounts"))
-        await using (var reader = await cmd.ExecuteReaderAsync())
+        try
         {
-            while (await reader.ReadAsync())
+            // Если удалять несуществующую запись, то ошибки не будет
+            await using (var cmd = dataSource.CreateCommand(
+                             $"DELETE FROM {query.Split(DataParsingExtension.QuerySplitter)[2]} WHERE {condition};"))
             {
-                accounts.Add(
-                    (reader.GetString(0) + '|' + reader.GetString(1) + '|' + reader.GetString(2))
-                    .StringToAccount());
-                //Console.WriteLine(accounts.Last().AccountToString());
+                await cmd.ExecuteNonQueryAsync();
             }
-        }
 
-        return accounts;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ew;{ex.Message}");
+            return false;
+        }
     }
 
-    public async Task<Account> GetAccount(String login) //
+    public async Task<bool> AddValueToAnyTable(String tableName, String columns, String values) //
     {
-        return new Account();
+        try
+        {
+            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+            await using (var cmd = dataSource.CreateCommand(
+                             $"INSERT INTO {tableName} ({columns}) VALUES ({values});"))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ew;{ex.Message}");
+            return false;
+        }
     }
 
-    public async Task<bool> CheckAdminKey(string key)
+    public async Task<bool> AddValueToAnyTable(String query) //
     {
-        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-        await using (var cmd = dataSource.CreateCommand("SELECT adminKey FROM Accounts"))
-        await using (var reader = await cmd.ExecuteReaderAsync())
+        try
         {
-            while (await reader.ReadAsync())
-            {
-                if(reader.GetString(0) == key) return true;
-            }
-        }
-        return false;
-    }
-    public async Task<bool> CheckAccountData(Account account)
-    {
-        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
-        await using (var cmd = dataSource.CreateCommand("SELECT login,password FROM Accounts"))
-        await using (var reader = await cmd.ExecuteReaderAsync())
-        {
-            while (await reader.ReadAsync())
+            await using (var cmd = dataSource.CreateCommand(
+                             $"INSERT INTO {query.Split(DataParsingExtension.QuerySplitter)[2]} ({query.Split(DataParsingExtension.QuerySplitter)[1]}) VALUES ({query.Split(DataParsingExtension.QuerySplitter)[0]});"))
             {
-                if(reader.GetString(0) == account.Login)
-                    if (reader.GetString(1) == account.Password) return true;
-                    else return false;
+                await cmd.ExecuteNonQueryAsync();
             }
+
+            return true;
         }
-        return false;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ew;{ex.Message}");
+            return false;
+        }
     }
 }

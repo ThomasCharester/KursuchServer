@@ -7,7 +7,7 @@ public class Command
 {
     public CommandType Type;
     public TcpClient Client;
-    public String Data;
+    public String Query;
     public Object Output;
     public Action<Object> OutputFunc;
     

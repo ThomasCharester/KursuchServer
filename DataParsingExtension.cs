@@ -49,6 +49,10 @@ public static class DataParsingExtension
         return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1],
             account.Split(ValueSplitter)[2]);
     }
+    public static Account StringToAccountLP(this String account)
+    {
+        return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1]);
+    }
 
     public static String AccountsToString(this List<Account> accounts)
     {

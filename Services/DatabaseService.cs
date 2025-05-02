@@ -56,25 +56,6 @@ public class DatabaseService
         }
     }
 
-    public async Task<bool> CheckDataAnyTable(String tableName, String data, String columns = "*")
-    {
-        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-        StringBuilder condition = new();
-
-        var columnNames = columns.Split(',');
-        var dataToCheck = data.Split(',');
-
-        for (int i = 0; i < dataToCheck.Length; i++)
-            condition.Append(columnNames[i] + " = " + dataToCheck[i]);
-
-        await using (var cmd = dataSource.CreateCommand($"SELECT {columns} FROM {tableName} WHERE {condition}"))
-        await using (var reader = await cmd.ExecuteReaderAsync())
-        {
-            return reader.HasRows;
-        }
-    }
-
     public async Task<bool> CheckDataAnyTable(String query)
     {
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
@@ -116,34 +97,6 @@ public class DatabaseService
         return condition;
     }
 
-    public async Task<List<String>> GetRowsOfAnyTable(String tableName, String columns) //
-    {
-        List<String> items = new();
-        StringBuilder builder = new();
-        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-        await using (var cmd = dataSource.CreateCommand($"SELECT {columns} FROM {tableName}"))
-        {
-            await using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                while (await reader.ReadAsync())
-                {
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        builder.Append(reader.GetString(i) + ',');
-                    }
-
-                    builder.Remove(builder.Length - 1, 1);
-
-                    items.Add(builder.ToString());
-                    builder.Clear();
-                }
-            }
-        }
-
-        return items;
-    }
-
     public async Task<List<String>> GetRowsOfAnyTable(String query) //
     {
         List<String> items = new();
@@ -158,12 +111,23 @@ public class DatabaseService
                 while (await reader.ReadAsync())
                 {
                     for (int i = 0; i < reader.FieldCount; i++)
+                    {
                         if (reader.GetFieldType(i) == typeof(string))
-                            builder.Append(reader.GetString(i) + ',');
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetString(i) + ',');
+                            else builder.Append("NAN,");
+                        }
                         else if (reader.GetFieldType(i) == typeof(int))
-                            builder.Append(reader.GetInt32(i).ToString() + ',');
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetInt32(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
                         else if (reader.GetFieldType(i) == typeof(bool))
-                            builder.Append(reader.GetBoolean(i).ToString() + ',');
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetBoolean(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
+                    }
 
                     builder.Remove(builder.Length - 1, 1);
 
@@ -187,7 +151,7 @@ public class DatabaseService
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
         await using (var cmd = dataSource.CreateCommand(
-                         $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]} FROM {query.Split(DataParsingExtension.ValueSplitter)[2]} WHERE {condition}"))
+                         $"SELECT * FROM {query.Split(DataParsingExtension.QuerySplitter)[2]} WHERE {condition}"))
         {
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -195,20 +159,34 @@ public class DatabaseService
                 {
                     for (int i = 0; i < reader.FieldCount; i++)
                         if (reader.GetFieldType(i) == typeof(string))
-                            value.Append(reader.GetString(i) + ',');
+                        {
+                            if (!reader.IsDBNull(i)) value.Append(reader.GetString(i) + ',');
+                            else value.Append("NAN,");
+                        }
                         else if (reader.GetFieldType(i) == typeof(int))
-                            value.Append(reader.GetInt32(i).ToString() + ',');
+                        {
+                            if (!reader.IsDBNull(i)) value.Append(reader.GetInt32(i).ToString() + ',');
+                            else value.Append("NAN,");
+                        }
                         else if (reader.GetFieldType(i) == typeof(bool))
-                            value.Append(reader.GetBoolean(i).ToString() + ',');
-                    
+                        {
+                            if (!reader.IsDBNull(i)) value.Append(reader.GetBoolean(i).ToString() + ',');
+                            else value.Append("NAN,");
+                        }
+
                     value.Remove(value.Length - 1, 1);
                     return value.ToString();
                 }
             }
         }
 
-        query = "ERR";
-        return query;
+        if (value.Length == 0)
+        {
+            query = "ERR";
+            return query;
+        }
+
+        return value.ToString();
     }
 
     public async Task<bool> DeleteValueFromAnyTable(String tableName, String condition) //

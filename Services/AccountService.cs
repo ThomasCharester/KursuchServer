@@ -20,29 +20,71 @@ public class AccountService
         private set { instance = value; }
     }
 
-    public void ThatKey(Object resultObj)
+    public void SVCheats(Client client, bool cheats) //
+    {
+        client.SV_Cheats = cheats;
+    }
+    public void CheckAdminKey(Object resultObj)
     {
         var result = (DBCommand)resultObj;
-        
+
+        var client = GetClient(result.Client).Value;
+
         if (result.Query == "ERR")
         {
+            client.SV_Cheats = false;
+
+            return;
+        }
+        var output = (String)result.Output;
+        ServerApp.Instance.AddCommand(
+            new DBCommand(result.Client,
+                '\'' + output.Split(DataParsingExtension.ValueSplitter)[2] + '\'' + 
+                $";adminKey;{DataParsingExtension.AKTableName}",
+                DBCommandType.CheckData,
+                GiveCheats));
+    }
+    public void GiveCheats(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+
+        var client = GetClient(result.Client).Value;
+
+        if (result.Query == "ERR")
+        {
+            client.SV_Cheats = false;
+
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"lf{DataParsingExtension.QuerySplitter}LE1{DataParsingExtension.QuerySplitter}Неправильный логин или пароль",
+                $"lv{DataParsingExtension.QuerySplitter} {result.Query}",
                 TCPCommandType.SendSingleValue));
+            
             return;
         }
 
-        result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
-
+        client.SV_Cheats = true;
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"ls{DataParsingExtension.QuerySplitter} {result.Query}",
+            $"la{DataParsingExtension.QuerySplitter} {result.Query}",
             TCPCommandType.SendSingleValue));
     }
+
     public void RequestLogin(ACommand data) //
     {
+        var one = data.Query.Split(DataParsingExtension.ValueSplitter)[0];
+        var two = data.Query.Split(DataParsingExtension.ValueSplitter)[1];
+        
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Query + $";login,password;{DataParsingExtension.ATableName}", DBCommandType.CheckData,
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.ValueSplitter)[0] + DataParsingExtension.ValueSplitter +
+                data.Query.Split(DataParsingExtension.ValueSplitter)[1] +
+                $";login,password;{DataParsingExtension.ATableName}", DBCommandType.CheckData,
                 LoginResult));
+        
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.ValueSplitter)[0] +
+                $";login;{DataParsingExtension.ATableName}",
+                DBCommandType.ValueGet,
+                CheckAdminKey));
     }
 
     public void LoginResult(Object resultObj)
@@ -59,7 +101,8 @@ public class AccountService
 
         result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
 
-        _authorizedClients.Add(new(result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount(), result.Client));
+        _authorizedClients.Add(new(result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccountLP(),
+            result.Client));
 
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             $"ls{DataParsingExtension.QuerySplitter} {result.Query}",
@@ -78,7 +121,16 @@ public class AccountService
 
     public void RequestRegister(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName}",
+        
+        if (data.Query.Split(DataParsingExtension.ValueSplitter)[2] == "\'NAN\'")
+            ServerApp.Instance.AddCommand(new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.ValueSplitter)[0] + DataParsingExtension.ValueSplitter +
+                data.Query.Split(DataParsingExtension.ValueSplitter)[1] +
+                $";login,password;{DataParsingExtension.ATableName}",
+                DBCommandType.ValueAdd, RegisterResult));
+        else 
+            ServerApp.Instance.AddCommand(new DBCommand(data.Client,
+            data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName}",
             DBCommandType.ValueAdd, RegisterResult));
     }
 
@@ -94,9 +146,9 @@ public class AccountService
             return;
         }
 
-        result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
+        //result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
 
-        _authorizedClients.Add(new(result.Query.StringToAccount(), result.Client));
+        //_authorizedClients.Add(new(result.Query.StringToAccount(), result.Client));
 
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client, $"rs{DataParsingExtension.QuerySplitter})",
             TCPCommandType.SendSingleValue));
@@ -116,7 +168,8 @@ public class AccountService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName};" + GetClient(data.Client).Value.ClientToStringDB(),
+                data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName};" +
+                GetClient(data.Client).Value.ClientToStringDB(),
                 DBCommandType.ValueModify, RegisterModify));
     }
 
@@ -134,13 +187,13 @@ public class AccountService
 
         Client modifyMe = GetClient(result.Query.Split(DataParsingExtension.QuerySplitter)[3]
             .Split(DataParsingExtension.ValueSplitter)[0]).Value;
-        
+
         Account modifiers = result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount();
-        
+
         modifyMe.Login = modifiers.Login;
         modifyMe.Password = modifiers.Password;
         modifyMe.AdminKey = modifiers.AdminKey;
-        
+
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             $"am{DataParsingExtension.QuerySplitter}s{DataParsingExtension.QuerySplitter}Данные изменены успешно)",
             TCPCommandType.SendSingleValue));
@@ -148,7 +201,8 @@ public class AccountService
 
     public void RequestDelete(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";login;{DataParsingExtension.ATableName}",
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client,
+            data.Query + $";login;{DataParsingExtension.ATableName}",
             DBCommandType.ValueDelete,
             DeleteAccountResult));
     }
@@ -167,9 +221,6 @@ public class AccountService
                 TCPCommandType.SendSingleValue));
     }
 
-    public void SVCheats(ACommand data) //
-    {
-    }
 
     // TODO Абсолютно небезопасно, ладно.
     public Client? GetClient(String login)

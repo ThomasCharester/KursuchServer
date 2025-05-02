@@ -7,7 +7,7 @@ public struct Account
     public String AdminKey;
     
     public Account(){}
-    public Account(String login, String password, String adminKey)
+    public Account(String login, String password, String adminKey = "NAN")
     {
         Login = login;
         Password = password;

@@ -25,11 +25,6 @@ public class DBCommand : Command
     {
         try
         {
-            TCPCommand debugCommand = new TCPCommand();
-            debugCommand.Type = CommandType.TCPCommand;
-            debugCommand.SubType = TCPCommandType.SendSingleValue;
-            debugCommand.Client = Client;
-            debugCommand.Query = $"Запрос на {SubType} выполнен ";
             switch (SubType)
             {
                 case DBCommandType.ValueAdd:
@@ -66,8 +61,6 @@ public class DBCommand : Command
                     break;
             }
             OutputFunc(this);
-
-            ServerApp.Instance.AddCommand(debugCommand);
         }
         catch (Exception ex)
         {

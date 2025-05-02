@@ -9,7 +9,7 @@ public record struct Client
     public String Password;
     public String AdminKey;
     public TcpClient Cocket;
-    
+    public bool SV_Cheats;
     public Client(){}
 
     public Client(String login, String password, String adminKey, TcpClient cocket = null)

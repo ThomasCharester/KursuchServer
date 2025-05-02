@@ -6,8 +6,16 @@ namespace KursuchServer;
 public static class DataParsingExtension
 {
     public static readonly char ValueSplitter = ',';
-    public static char QuerySplitter = ';';
-    public static char AdditionalQuerySplitter = '|';
+    public static readonly char QuerySplitter = ';';
+    public static readonly char AdditionalQuerySplitter = '|';
+
+    public static readonly String ATableName = "Accounts";
+    public static readonly String AKTableName = "AdminKeys";
+    public static readonly String ATTableName = "AquireTypes";
+    public static readonly String GATableName = "Games";
+    public static readonly String PMTableName = "PaymentMethods";
+    public static readonly String STableName = "Sellers";
+    public static readonly String GOTableName = "Goods";
 
     public static Account ClientToAccount(this Client client)
     {

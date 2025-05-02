@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Xml;
 using KursuchServer.DataStructures;
 
 namespace KursuchServer.Services;
@@ -19,10 +20,28 @@ public class AccountService
         private set { instance = value; }
     }
 
+    public void ThatKey(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+        
+        if (result.Query == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"lf{DataParsingExtension.QuerySplitter}LE1{DataParsingExtension.QuerySplitter}Неправильный логин или пароль",
+                TCPCommandType.SendSingleValue));
+            return;
+        }
+
+        result.Query = new String(result.Query.Where(c => c != '\'').ToArray());
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            $"ls{DataParsingExtension.QuerySplitter} {result.Query}",
+            TCPCommandType.SendSingleValue));
+    }
     public void RequestLogin(ACommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Query + ";login,password;Accounts", DBCommandType.CheckData,
+            new DBCommand(data.Client, data.Query + $";login,password;{DataParsingExtension.ATableName}", DBCommandType.CheckData,
                 LoginResult));
     }
 
@@ -59,7 +78,7 @@ public class AccountService
 
     public void RequestRegister(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + ";login,password,adminKey;Accounts",
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName}",
             DBCommandType.ValueAdd, RegisterResult));
     }
 
@@ -88,7 +107,7 @@ public class AccountService
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
                 data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                ";login,password,adminKey;Accounts;" +
+                $";login,password,adminKey;{DataParsingExtension.ATableName};" +
                 data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1], DBCommandType.ValueModify,
                 RegisterModify));
     }
@@ -97,7 +116,7 @@ public class AccountService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                data.Query + ";login,password,adminKey;Accounts;" + GetClient(data.Client).Value.ClientToStringDB(),
+                data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName};" + GetClient(data.Client).Value.ClientToStringDB(),
                 DBCommandType.ValueModify, RegisterModify));
     }
 
@@ -129,7 +148,7 @@ public class AccountService
 
     public void RequestDelete(ACommand data) //
     {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + ";login;Accounts",
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";login;{DataParsingExtension.ATableName}",
             DBCommandType.ValueDelete,
             DeleteAccountResult));
     }

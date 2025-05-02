@@ -1,9 +1,11 @@
+using KursuchServer.DataStructures;
+
 namespace KursuchServer.Services;
 
 public class GoodsService
 {
     private static GoodsService instance = null;
-
+    
     public static GoodsService Instance
     {
         get
@@ -13,7 +15,13 @@ public class GoodsService
         }
         private set { instance = value; }
     }
+    private List<Good> _cart;
 
+    public void AddToCart(Good good)
+    {
+        _cart.Add(good);
+    }
+    
     public void RequestAddGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(

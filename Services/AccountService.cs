@@ -22,7 +22,7 @@ public class AccountService
     public void RequestLogin(ACommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Query + ";login,password,adminKey;Accounts", DBCommandType.CheckData,
+            new DBCommand(data.Client, data.Query + ";login,password;Accounts", DBCommandType.CheckData,
                 LoginResult));
     }
 

@@ -16,6 +16,11 @@ public static class DataParsingExtension
     public static readonly String PMTableName = "PaymentMethods";
     public static readonly String STableName = "Sellers";
     public static readonly String GOTableName = "Goods";
+    public static readonly String DiseasesTable = "Diseases";
+    public static readonly String MedicinesTable = "Medicines";
+    public static readonly String PlantsTable = "Plants";
+    public static readonly String PlantMedicinesTable = "PlantMedicines";
+    public static readonly String MedicineDosagesTable = "MedicineDosages";
 
     public static Account ClientToAccount(this Client client)
     {

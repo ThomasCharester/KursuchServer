@@ -11,16 +11,19 @@ public static class DataParsingExtension
 
     public static readonly String ATableName = "Accounts";
     public static readonly String AKTableName = "AdminKeys";
+    
     public static readonly String ATTableName = "AquireTypes";
     public static readonly String GATableName = "Games";
     public static readonly String PMTableName = "PaymentMethods";
     public static readonly String STableName = "Sellers";
     public static readonly String GOTableName = "Goods";
-    public static readonly String DiseasesTable = "Diseases";
-    public static readonly String MedicinesTable = "Medicines";
-    public static readonly String PlantsTable = "Plants";
-    public static readonly String PlantMedicinesTable = "PlantMedicines";
-    public static readonly String MedicineDosagesTable = "MedicineDosages";
+    
+    public const string DiseasesTable = "Diseases";
+    public const string MedicinesTable = "Medicines";
+    public const string PlantsTable = "Plants";
+    public const string MedicineDiseasesTable = "MedicineDiseases";
+    public const string PlantMedicinesTable = "PlantMedicines";
+    public const string DosagesTable = "Dosages";
 
     public static Account ClientToAccount(this Client client)
     {

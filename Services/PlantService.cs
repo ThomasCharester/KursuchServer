@@ -14,7 +14,7 @@ public class PlantService
         private set { instance = value; }
     }
 // Добавление основных сущностей
-    public void RequestAddDisease(GCommand data)
+    public void RequestAddDisease(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client, 
@@ -23,7 +23,7 @@ public class PlantService
                 GenericResult));
     }
 
-    public void RequestAddMedicine(GCommand data)
+    public void RequestAddMedicine(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -32,7 +32,7 @@ public class PlantService
                 GenericResult));
     }
 
-    public void RequestAddPlant(GCommand data)
+    public void RequestAddPlant(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -42,7 +42,7 @@ public class PlantService
     }
 
     // Работа со связующими таблицами
-    public void RequestAddMedicineDisease(GCommand data)
+    public void RequestAddMedicineDisease(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -51,7 +51,7 @@ public class PlantService
                 GenericResult));
     }
 
-    public void RequestAddPlantMedicine(GCommand data)
+    public void RequestAddPlantMedicine(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -61,7 +61,7 @@ public class PlantService
     }
 
     // Дозировки
-    public void RequestAddDosage(GCommand data)
+    public void RequestAddDosage(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -71,7 +71,7 @@ public class PlantService
     }
 
     // Удаление
-    public void RequestDeleteDisease(GCommand data)
+    public void RequestDeleteDisease(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -79,8 +79,35 @@ public class PlantService
                 DBCommandType.ValueDelete,
                 GenericResult));
     }
+    public void RequestDeleteMedicine(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query + $";medicineName;{DataParsingExtension.MedicinesTable}",
+                DBCommandType.ValueDelete,
+                GenericResult));
+    }
 
-    public void RequestDeletePlantMedicine(GCommand data)
+    public void RequestDeletePlant(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query + $";plantName;{DataParsingExtension.PlantsTable}",
+                DBCommandType.ValueDelete,
+                GenericResult));
+    }
+
+    // Работа со связующими таблицами
+    public void RequestDeleteMedicineDisease(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query + $";medicineName,diseaseName;{DataParsingExtension.MedicineDiseasesTable}",
+                DBCommandType.ValueDelete,
+                GenericResult));
+    }
+
+    public void RequestDeletePlantMedicine(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -90,7 +117,7 @@ public class PlantService
     }
 
     // Получение данных
-    public void RequestGetDiseasesForMedicine(GCommand data)
+    public void RequestGetDiseasesForMedicine(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -100,7 +127,7 @@ public class PlantService
                 GenericGetAllResult));
     }
 
-    public void RequestGetDosages(GCommand data)
+    public void RequestGetDosage(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
@@ -109,13 +136,80 @@ public class PlantService
                 DBCommandType.ValueGet,
                 GenericGetResult));
     }
+    public void RequestGetDisease(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                $";diseaseName;{DataParsingExtension.DiseasesTable}",
+                DBCommandType.ValueGet,
+                GenericGetResult));
+    }
+    public void RequestGetMedicine(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                $";medicineName;{DataParsingExtension.MedicinesTable}",
+                DBCommandType.ValueGet,
+                GenericGetResult));
+    }
+    public void RequestGetPlant(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                $";plantName;{DataParsingExtension.PlantsTable}",
+                DBCommandType.ValueGet,
+                GenericGetResult));
+    }
 
     // Получение всех записей
-    public void RequestGetAllPlants(GCommand data)
+    public void RequestGetAllDiseases(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"*,{DataParsingExtension.DiseasesTable}",
+                DBCommandType.ValueGetAll, 
+                GenericGetAllResult));
+    }
+    public void RequestGetAllMedicines(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"*,{DataParsingExtension.MedicinesTable}",
+                DBCommandType.ValueGetAll, 
+                GenericGetAllResult));
+    }
+    public void RequestGetAllPlantsMedicines(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"*,{DataParsingExtension.PlantMedicinesTable}",
+                DBCommandType.ValueGetAll, 
+                GenericGetAllResult));
+    }
+    public void RequestGetAllMedicineDiseases(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"*,{DataParsingExtension.MedicineDiseasesTable}",
+                DBCommandType.ValueGetAll, 
+                GenericGetAllResult));
+    }
+    public void RequestGetAllPlants(PCommand data)
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
                 $"*,{DataParsingExtension.PlantsTable}",
+                DBCommandType.ValueGetAll, 
+                GenericGetAllResult));
+    }
+    public void RequestGetAllDosages(PCommand data)
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"*,{DataParsingExtension.DosagesTable}",
                 DBCommandType.ValueGetAll, 
                 GenericGetAllResult));
     }

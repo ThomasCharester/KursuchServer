@@ -111,9 +111,10 @@ public class AccountService
 
     public void Logout(ACommand data) //
     {
-        Client client = new(data.Query.StringToAccount(), data.Client);
-
-        _authorizedClients.Remove(_authorizedClients.First(x => x.Login == client.Login));
+        Client client = new(data.Query.StringToAccountLP(), data.Client);
+        String login = new String(client.Login.Where(c => c != '\'').ToArray());
+        
+       _authorizedClients.Remove(_authorizedClients.First(x => x.Login == login));
 
         ServerApp.Instance.AddCommand(new TCPCommand(data.Client, $"lo{DataParsingExtension.QuerySplitter}(",
             TCPCommandType.DisconnectClient));

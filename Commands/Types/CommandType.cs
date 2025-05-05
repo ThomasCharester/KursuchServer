@@ -2,8 +2,9 @@ namespace KursuchServer;
 
 public enum CommandType
 {
-    TCPCommand = 0,
-    DBCommand = 1,
-    ACommand = 2,
-    GCommand = 3,
+    TCPCommand,
+    DBCommand,
+    ACommand,
+    GCommand,
+    PCommand
 }

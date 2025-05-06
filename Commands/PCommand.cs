@@ -26,7 +26,7 @@ public class PCommand : Command
         try
         {
             var client = AccountService.Instance.GetClient(Client);
-            bool isAdmin = client?.AdminKey != "NAN";
+            bool isAdmin = client.SV_Cheats;
 
             switch (SubType)
             {

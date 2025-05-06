@@ -66,7 +66,8 @@ public static class DataParsingExtension
     {
         StringBuilder builder = new();
         foreach (Account account in accounts)
-            builder.Append(account.AccountToString() + '\n');
+            builder.Append(account.AccountToString() + AdditionalQuerySplitter);
+        builder.Remove(builder.Length - 1, 1);
         return builder.ToString();
     }
     

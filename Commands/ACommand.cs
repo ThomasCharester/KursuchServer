@@ -35,14 +35,14 @@ public class ACommand : Command
                     break;
                 case ACommandType.AccountDelete:
                 {
-                    var invoker = AccountService.Instance.GetClient(Client).Value;
+                    var invoker = AccountService.Instance.GetClient(Client);
 
                     var toDelete = Query.StringToAccount();
                     if (invoker.AdminKey == "NAN")
                         throw new Exception("Читы не разрешены");
                     if (invoker.Login == toDelete.Login)
                         throw new Exception("Себе в ногу не стреляем");
-                    if (AccountService.Instance.GetClient(toDelete.Login).HasValue)
+                    if (AccountService.Instance.GetClient(toDelete.Login) != null)
                         throw new Exception("Пользователь ещё в сети");
                     
                     Query = toDelete.Login;
@@ -54,7 +54,7 @@ public class ACommand : Command
                     break;
                 case ACommandType.AccountModify:
                 {
-                    var invoker = AccountService.Instance.GetClient(Client).Value;
+                    var invoker = AccountService.Instance.GetClient(Client);
                     if (invoker.AdminKey == "NAN")
                         throw new Exception("Читы не разрешены");
                     AccountService.Instance.RequestModify(this);
@@ -62,7 +62,7 @@ public class ACommand : Command
                     break;
                 case ACommandType.AccountModifySelf:
                 {
-                    var invoker = AccountService.Instance.GetClient(Client).Value;
+                    var invoker = AccountService.Instance.GetClient(Client);
                     AccountService.Instance.RequestModifySelf(this);
                 }
                     break;

@@ -3,7 +3,7 @@ using KursuchServer.DataStructures;
 
 namespace KursuchServer;
 
-public record struct Client
+public class Client
 {
     public String Login;
     public String Password;

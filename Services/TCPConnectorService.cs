@@ -124,7 +124,7 @@ public class TCPConnectorService
                         }
                     }
 
-                    if (!AccountService.Instance.GetClient(tcpClient).HasValue)
+                    if (AccountService.Instance.GetClient(tcpClient) == null)
                         continue;
 
                     loginAttempt = true;
@@ -150,10 +150,10 @@ public class TCPConnectorService
             if (tcpClient.Connected) Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
             
             var client = AccountService.Instance.GetClient(tcpClient);
-            if (client.HasValue)
+            if (client != null)
                 ServerApp.Instance.AddCommand(new ACommand(tcpClient,
-                    client.Value.Login + ',' +
-                    client.Value.Password,
+                    client.Login + ',' +
+                    client.Password,
                     ACommandType.AccountLogout));
             
             tcpClient.Close();
@@ -375,22 +375,22 @@ public class TCPConnectorService
                             case 'a': // Добавление
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DiseaseAdd, SendMultipleValue));
+                                    PCommandType.DiseaseAdd, SendSingleValue));
                                 break;
                             case 'd': // Удаление
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DiseaseDelete, SendMultipleValue));
+                                    PCommandType.DiseaseDelete, SendSingleValue));
                                 break;
                             case 'm': // Модификация
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DiseaseModify, SendMultipleValue));
+                                    PCommandType.DiseaseModify, SendSingleValue));
                                 break;
                             case 'g': // Получение
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DiseaseGet, SendMultipleValue));
+                                    PCommandType.DiseaseGet, SendSingleValue));
                                 break;
                             case 'l': // Все записи
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
@@ -407,22 +407,22 @@ public class TCPConnectorService
                             case 'a':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineAdd, SendMultipleValue));
+                                    PCommandType.MedicineAdd, SendSingleValue));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineDelete, SendMultipleValue));
+                                    PCommandType.MedicineDelete, SendSingleValue));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineModify, SendMultipleValue));
+                                    PCommandType.MedicineModify, SendSingleValue));
                                 break;
                             case 'g':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineGet, SendMultipleValue));
+                                    PCommandType.MedicineGet, SendSingleValue));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
@@ -439,22 +439,22 @@ public class TCPConnectorService
                             case 'a':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantAdd, SendMultipleValue));
+                                    PCommandType.PlantAdd, SendSingleValue));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantDelete, SendMultipleValue));
+                                    PCommandType.PlantDelete, SendSingleValue));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantModify, SendMultipleValue));
+                                    PCommandType.PlantModify, SendSingleValue));
                                 break;
                             case 'g':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantGet, SendMultipleValue));
+                                    PCommandType.PlantGet, SendSingleValue));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
@@ -471,12 +471,12 @@ public class TCPConnectorService
                             case 'a':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantMedicineAdd, SendMultipleValue));
+                                    PCommandType.PlantMedicineAdd, SendSingleValue));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.PlantMedicineDelete, SendMultipleValue));
+                                    PCommandType.PlantMedicineDelete, SendSingleValue));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
@@ -493,12 +493,12 @@ public class TCPConnectorService
                             case 'a':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineDiseaseAdd, SendMultipleValue));
+                                    PCommandType.MedicineDiseaseAdd, SendSingleValue));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.MedicineDiseaseDelete, SendMultipleValue));
+                                    PCommandType.MedicineDiseaseDelete, SendSingleValue));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
@@ -515,17 +515,17 @@ public class TCPConnectorService
                             case 'a':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DosageAdd, SendMultipleValue));
+                                    PCommandType.DosageAdd, SendSingleValue));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DosageDelete, SendMultipleValue));
+                                    PCommandType.DosageDelete, SendSingleValue));
                                 break;
                             case 'g':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    PCommandType.DosageGet, SendMultipleValue));
+                                    PCommandType.DosageGet, SendSingleValue));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new PCommand(tcpClient,

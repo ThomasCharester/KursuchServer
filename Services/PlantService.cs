@@ -36,7 +36,7 @@ public class PlantService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                data.Query + $";plantName;{DataParsingExtension.PlantsTable}",
+                data.Query + $";plantId,plantName;{DataParsingExtension.PlantsTable}",
                 DBCommandType.ValueAdd,
                 GenericResult));
     }

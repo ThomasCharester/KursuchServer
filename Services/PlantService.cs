@@ -201,7 +201,7 @@ public class PlantService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"*,{DataParsingExtension.PlantsTable}",
+                $"lp{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.PlantsTable}", //
                 DBCommandType.ValueGetAll, 
                 GenericGetAllResult));
     }

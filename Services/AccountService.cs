@@ -57,7 +57,7 @@ public class AccountService
             GetClient(result.Client).SV_Cheats = false;
 
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"lv{DataParsingExtension.QuerySplitter} {result.Query}",
+                $"lov{DataParsingExtension.QuerySplitter} {result.Query}",
                 TCPCommandType.SendSingleValue));
 
             return;
@@ -65,7 +65,7 @@ public class AccountService
 
         GetClient(result.Client).SV_Cheats = true;
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"la{DataParsingExtension.QuerySplitter} {result.Query}",
+            $"loa{DataParsingExtension.QuerySplitter} {result.Query}",
             TCPCommandType.SendSingleValue));
     }
 
@@ -96,7 +96,7 @@ public class AccountService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"lf{DataParsingExtension.QuerySplitter}LE1{DataParsingExtension.QuerySplitter}Неправильный логин или пароль",
+                $"lof{DataParsingExtension.QuerySplitter}LE1{DataParsingExtension.QuerySplitter}Неправильный логин или пароль",
                 TCPCommandType.SendSingleValue));
             return;
         }
@@ -107,7 +107,7 @@ public class AccountService
             result.Client));
 
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"ls{DataParsingExtension.QuerySplitter} {result.Query}",
+            $"los{DataParsingExtension.QuerySplitter} {result.Query}",
             TCPCommandType.SendSingleValue));
     }
 

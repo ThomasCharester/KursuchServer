@@ -568,10 +568,10 @@ public class TCPConnectorService
         NetworkStream stream = data.Client.GetStream();
 
         StringBuilder builder = new();
-
+        builder.Append(data.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter);
         foreach (var value in (List<String>)data.Output)
-            builder.Append(value + '\n');
-
+            builder.Append(value + DataParsingExtension.AdditionalQuerySplitter);
+        builder.Remove(builder.Length - 1, 1);
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(builder.ToString());
         stream.Write(responseData, 0, responseData.Length);

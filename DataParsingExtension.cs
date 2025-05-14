@@ -25,6 +25,10 @@ public static class DataParsingExtension
     public const string PlantMedicinesTable = "PlantMedicines";
     public const string DosagesTable = "Dosages";
 
+    public static String DBReadable(this String str)
+    {
+        return '\'' + str + '\'';
+    }
     public static Account ClientToAccount(this Client client)
     {
         return new Account(client.Login, client.Password, client.AdminKey);

@@ -41,7 +41,7 @@ public class AccountService
         var output = (String)result.Output;
         ServerApp.Instance.AddCommand(
             new DBCommand(result.Client,
-                '\'' + output.Split(DataParsingExtension.ValueSplitter)[2] + '\'' +
+                output.Split(DataParsingExtension.ValueSplitter)[2].DBReadable() +
                 $";adminKey;{DataParsingExtension.AKTableName}",
                 DBCommandType.CheckData,
                 GiveCheats));
@@ -50,7 +50,7 @@ public class AccountService
     public void GiveCheats(Object resultObj)
     {
         var result = (DBCommand)resultObj;
-        
+
 
         if (result.Query == "ERR")
         {
@@ -71,8 +71,8 @@ public class AccountService
 
     public void RequestLogin(ACommand data) //
     {
-        var one = data.Query.Split(DataParsingExtension.ValueSplitter)[0];
-        var two = data.Query.Split(DataParsingExtension.ValueSplitter)[1];
+        // var one = data.Query.Split(DataParsingExtension.ValueSplitter)[0];
+        // var two = data.Query.Split(DataParsingExtension.ValueSplitter)[1];
 
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,

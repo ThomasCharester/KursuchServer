@@ -11,13 +11,13 @@ public static class DataParsingExtension
 
     public static readonly String ATableName = "Accounts";
     public static readonly String AKTableName = "AdminKeys";
-    
+
     public static readonly String ATTableName = "AquireTypes";
     public static readonly String GATableName = "Games";
     public static readonly String PMTableName = "PaymentMethods";
     public static readonly String STableName = "Sellers";
     public static readonly String GOTableName = "Goods";
-    
+
     public const string DiseasesTable = "Diseases";
     public const string MedicinesTable = "Medicines";
     public const string PlantsTable = "Plants";
@@ -29,6 +29,7 @@ public static class DataParsingExtension
     {
         return '\'' + str + '\'';
     }
+
     public static Account ClientToAccount(this Client client)
     {
         return new Account(client.Login, client.Password, client.AdminKey);
@@ -41,16 +42,19 @@ public static class DataParsingExtension
 
     public static String AccountToString(this Account account)
     {
-        return $"{account.Login}{ValueSplitter}{account.Password}{ValueSplitter}{account.AdminKey}";
+        return account.Login + ValueSplitter + account.Password + ValueSplitter + account.AdminKey;
     }
+
     public static String AccountToStringDB(this Account account)
     {
         return $"\'{account.Login}\'{ValueSplitter}\'{account.Password}\'{ValueSplitter}\'{account.AdminKey}\'";
     }
+
     public static String ClientToString(this Client client)
     {
         return $"{client.Login}{ValueSplitter}{client.Password}{ValueSplitter}{client.AdminKey}";
     }
+
     public static String ClientToStringDB(this Client client)
     {
         return $"\'{client.Login}\'{ValueSplitter}\'{client.Password}\'{ValueSplitter}\'{client.AdminKey}\'";
@@ -61,6 +65,7 @@ public static class DataParsingExtension
         return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1],
             account.Split(ValueSplitter)[2]);
     }
+
     public static Account StringToAccountLP(this String account)
     {
         return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1]);
@@ -74,5 +79,4 @@ public static class DataParsingExtension
         builder.Remove(builder.Length - 1, 1);
         return builder.ToString();
     }
-    
 }

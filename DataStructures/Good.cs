@@ -7,6 +7,6 @@ public struct Good
     public String game;
     public String description;
     public String paymentMethod;
-    public String aquiretype;
+    //public String aquiretype;
     public String price;
 }

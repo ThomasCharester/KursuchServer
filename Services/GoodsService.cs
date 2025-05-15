@@ -25,7 +25,7 @@ public class GoodsService
     public void RequestAddGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Query + $";goodName,sellerName,gameName,description,paymentMethod,aquireType,stock,price;{DataParsingExtension.GOTableName}",
+            new DBCommand(data.Client, data.Query + $";goodName,sellerName,gameName,description,paymentMethod,stock,price;{DataParsingExtension.GOTableName}",
                 DBCommandType.ValueAdd,
                 GenericResult));
     }
@@ -44,12 +44,12 @@ public class GoodsService
                 GenericResult));
     }
 
-    public void RequestAddAquireType(GCommand data) //
-    {
-        ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}", DBCommandType.ValueAdd,
-                GenericResult));
-    }
+    // public void RequestAddAquireType(GCommand data) //
+    // {
+    //     ServerApp.Instance.AddCommand(
+    //         new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}", DBCommandType.ValueAdd,
+    //             GenericResult));
+    // }
 
     public void RequestAddPaymentMethod(GCommand data) //
     {
@@ -79,12 +79,12 @@ public class GoodsService
             GenericResult));
     }
 
-    public void RequestDeleteAquireType(GCommand data) //
-    {
-        ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}",
-            DBCommandType.ValueDelete,
-            GenericResult));
-    }
+    // public void RequestDeleteAquireType(GCommand data) //
+    // {
+    //     ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}",
+    //         DBCommandType.ValueDelete,
+    //         GenericResult));
+    // }
 
     public void RequestDeleteGame(GCommand data) //
     {
@@ -107,7 +107,7 @@ public class GoodsService
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
                 data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";goodName,sellerName,gameName,description,paymentMethod,aquireType,stock,price;{DataParsingExtension.GOTableName};" +
+                $";goodName,sellerName,gameName,description,paymentMethod,stock,price;{DataParsingExtension.GOTableName};" +
                 data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
                 DBCommandType.ValueModify, GenericResult));
     }
@@ -131,15 +131,15 @@ public class GoodsService
                 DBCommandType.ValueModify, GenericResult));
     }
     
-    public void RequestModifyAquireType(GCommand data) //
-    {
-        ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";aquireType;{DataParsingExtension.ATTableName};" +
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
-                DBCommandType.ValueModify, GenericResult));
-    }
+    // public void RequestModifyAquireType(GCommand data) //
+    // {
+    //     ServerApp.Instance.AddCommand(
+    //         new DBCommand(data.Client,
+    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+    //             $";aquireType;{DataParsingExtension.ATTableName};" +
+    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
+    //             DBCommandType.ValueModify, GenericResult));
+    // }
     public void RequestGetGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
@@ -156,14 +156,14 @@ public class GoodsService
                 $";sellerName;{DataParsingExtension.STableName}",
                 DBCommandType.ValueGet, GenericGetResult));
     }
-    public void RequestGetAquireType(GCommand data) //
-    {
-        ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";aquireType;{DataParsingExtension.ATTableName}",
-                DBCommandType.ValueGet, GenericGetResult));
-    }
+    // public void RequestGetAquireType(GCommand data) //
+    // {
+    //     ServerApp.Instance.AddCommand(
+    //         new DBCommand(data.Client,
+    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+    //             $";aquireType;{DataParsingExtension.ATTableName}",
+    //             DBCommandType.ValueGet, GenericGetResult));
+    // }
     
     public void RequestGetGame(GCommand data) //
     {
@@ -185,7 +185,7 @@ public class GoodsService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"*,{DataParsingExtension.GATableName}",
+                $"lg{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.GATableName}",
                 DBCommandType.ValueGetAll, GenericGetAllResult));
     }
     
@@ -193,7 +193,7 @@ public class GoodsService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"*,{DataParsingExtension.PMTableName}",
+                $"lp{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.PMTableName}",
                 DBCommandType.ValueGetAll, GenericGetAllResult));
     }
     
@@ -201,22 +201,22 @@ public class GoodsService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"*,{DataParsingExtension.STableName}",
+                $"ls{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.STableName}",
                 DBCommandType.ValueGetAll, GenericGetAllResult));
     }
     
-    public void RequestGetAllAquireType(GCommand data) //
-    {
-        ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                $"*,{DataParsingExtension.ATTableName}",
-                DBCommandType.ValueGetAll, GenericGetAllResult));
-    }
+    // public void RequestGetAllAquireType(GCommand data) //
+    // {
+    //     ServerApp.Instance.AddCommand(
+    //         new DBCommand(data.Client,
+    //             $"*,{DataParsingExtension.ATTableName}",
+    //             DBCommandType.ValueGetAll, GenericGetAllResult));
+    // }
     public void RequestGetAllGoods(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"*,{DataParsingExtension.GOTableName}",
+                $"lt{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.GOTableName}",
                 DBCommandType.ValueGetAll, GenericGetAllResult));
     }
     

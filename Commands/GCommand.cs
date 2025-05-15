@@ -33,12 +33,12 @@ public class GCommand : Command
                 case GCommandType.SellerGetAll:
                     GoodsService.Instance.RequestGetAllSeller(this);
                     break;
-                case GCommandType.AquireTypeGet:
-                    GoodsService.Instance.RequestGetAquireType(this);
-                    break;
-                case GCommandType.AquireTypeGetAll:
-                    GoodsService.Instance.RequestGetAllAquireType(this);
-                    break;
+                // case GCommandType.AquireTypeGet:
+                //     GoodsService.Instance.RequestGetAquireType(this);
+                //     break;
+                // case GCommandType.AquireTypeGetAll:
+                //     GoodsService.Instance.RequestGetAllAquireType(this);
+                //     break;
                 case GCommandType.PaymentMethodGet:
                     GoodsService.Instance.RequestGetPaymentMethod(this);
                     break;
@@ -80,15 +80,15 @@ public class GCommand : Command
                     case GCommandType.GoodModify:
                         GoodsService.Instance.RequestModifyGood(this);
                         break;
-                    case GCommandType.AquireTypeAdd:
-                        GoodsService.Instance.RequestAddAquireType(this);
-                        break;
-                    case GCommandType.AquireTypeDelete:
-                        GoodsService.Instance.RequestDeleteAquireType(this);
-                        break;
-                    case GCommandType.AquireTypeModify:
-                        GoodsService.Instance.RequestModifyAquireType(this);
-                        break;
+                    // case GCommandType.AquireTypeAdd:
+                    //     GoodsService.Instance.RequestAddAquireType(this);
+                    //     break;
+                    // case GCommandType.AquireTypeDelete:
+                    //     GoodsService.Instance.RequestDeleteAquireType(this);
+                    //     break;
+                    // case GCommandType.AquireTypeModify:
+                    //     GoodsService.Instance.RequestModifyAquireType(this);
+                    //     break;
                     case GCommandType.PaymentMethodAdd:
                         GoodsService.Instance.RequestAddPaymentMethod(this);
                         break;

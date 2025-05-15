@@ -32,16 +32,6 @@ namespace KursuchServer
             Instance._commandExecutionThread.Start();
             
             TCPConnectorService.Instance.StartServer();
-            // Account test  = new Account("TChar","*****","qwertyuiop");
-            // DatabaseService.Instance.AddAccount("qwertyuiop", test);
-            // DatabaseService.Instance.AddAccount("qwertyuiop", test);
-            // foreach (var acc in DatabaseService.Instance.GetAllAccounts().Result)
-            // {
-            //     Console.WriteLine(acc.AccountToString());
-            // }
-            // DatabaseService.Instance.GetAllAccounts();
-            
-            // Console.ReadKey();
         }
 
         private void CommandTaskExecution()

@@ -8,4 +8,5 @@ public enum ACommandType
     AccountDelete,
     AccountModify,
     AccountModifySelf,
+    AccountAdd,
 }

@@ -10,6 +10,7 @@ public class Client
     public String AdminKey;
     public TcpClient Cocket;
     public bool SV_Cheats = false;
+    public bool IsSeller = false;
     public Client(){}
 
     public Client(String login, String password, String adminKey, TcpClient cocket = null, bool svCheats = false)

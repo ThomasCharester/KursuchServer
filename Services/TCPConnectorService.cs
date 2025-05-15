@@ -196,6 +196,11 @@ public class TCPConnectorService
                             request.Split(DataParsingExtension.QuerySplitter)[1],
                             ACommandType.AccountModify));
                         break;
+                    case 'a':
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                            ACommandType.AccountAdd));
+                        break;
                 }
 
                 break;

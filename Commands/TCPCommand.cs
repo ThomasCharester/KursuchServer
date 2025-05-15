@@ -20,6 +20,15 @@ public class TCPCommand : Command
         Query = query;
         SubType = subType;
     }
+    public TCPCommand(TcpClient tcpClient, Command command, TCPCommandType subType, Action<Object> outputFunc = null)
+    {
+        OutputFunc = outputFunc;
+        Type = CommandType.TCPCommand;
+        Client = tcpClient;
+        Output = command.Output;
+        Query = command.Query;
+        SubType = subType;
+    }
 
     public override void Execute()
     {
@@ -31,6 +40,9 @@ public class TCPCommand : Command
                     TCPConnectorService.Instance.SendSingleValue(this);
                     break;
                 case TCPCommandType.SendMultipleValue:
+                    TCPConnectorService.Instance.SendMultipleValue(this);
+                    break;
+                case TCPCommandType.SendMultipleValueLabeled:
                     TCPConnectorService.Instance.SendMultipleValue(this);
                     break;
                 case TCPCommandType.DisconnectClient:

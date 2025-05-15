@@ -44,13 +44,6 @@ public class GoodsService
                 GenericResult));
     }
 
-    // public void RequestAddAquireType(GCommand data) //
-    // {
-    //     ServerApp.Instance.AddCommand(
-    //         new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}", DBCommandType.ValueAdd,
-    //             GenericResult));
-    // }
-
     public void RequestAddPaymentMethod(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
@@ -78,13 +71,6 @@ public class GoodsService
             DBCommandType.ValueDelete,
             GenericResult));
     }
-
-    // public void RequestDeleteAquireType(GCommand data) //
-    // {
-    //     ServerApp.Instance.AddCommand(new DBCommand(data.Client, data.Query + $";aquireType;{DataParsingExtension.ATTableName}",
-    //         DBCommandType.ValueDelete,
-    //         GenericResult));
-    // }
 
     public void RequestDeleteGame(GCommand data) //
     {
@@ -131,19 +117,10 @@ public class GoodsService
                 DBCommandType.ValueModify, GenericResult));
     }
     
-    // public void RequestModifyAquireType(GCommand data) //
-    // {
-    //     ServerApp.Instance.AddCommand(
-    //         new DBCommand(data.Client,
-    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-    //             $";aquireType;{DataParsingExtension.ATTableName};" +
-    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
-    //             DBCommandType.ValueModify, GenericResult));
-    // }
     public void RequestGetGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
+            new DBCommand(data.Client, "sgt" + DataParsingExtension.AdditionalQuerySplitter +
                 data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
                 $";goodName;{DataParsingExtension.GOTableName}",
                 DBCommandType.ValueGet, GenericGetResult));
@@ -151,40 +128,32 @@ public class GoodsService
     public void RequestGetSeller(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";sellerName;{DataParsingExtension.STableName}",
+            new DBCommand(data.Client, "sgs" + DataParsingExtension.AdditionalQuerySplitter +
+                                       data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                       $";sellerName;{DataParsingExtension.STableName}",
                 DBCommandType.ValueGet, GenericGetResult));
     }
-    // public void RequestGetAquireType(GCommand data) //
-    // {
-    //     ServerApp.Instance.AddCommand(
-    //         new DBCommand(data.Client,
-    //             data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-    //             $";aquireType;{DataParsingExtension.ATTableName}",
-    //             DBCommandType.ValueGet, GenericGetResult));
-    // }
     
     public void RequestGetGame(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";gameName;{DataParsingExtension.GATableName}",
+            new DBCommand(data.Client, "sgg" + DataParsingExtension.AdditionalQuerySplitter +
+                                       data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                       $";gameName;{DataParsingExtension.GATableName}",
                 DBCommandType.ValueGet, GenericGetResult));
     }
     public void RequestGetPaymentMethod(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
-                data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                $";methodName;{DataParsingExtension.PMTableName}",
+            new DBCommand(data.Client, "sgp" + DataParsingExtension.AdditionalQuerySplitter +
+                                       data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                       $";methodName;{DataParsingExtension.PMTableName}",
                 DBCommandType.ValueGet, GenericGetResult));
     }
     public void RequestGetAllGame(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client,
+            new DBCommand(data.Client, 
                 $"lg{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.GATableName}",
                 DBCommandType.ValueGetAll, GenericGetAllResult));
     }
@@ -228,7 +197,7 @@ public class GoodsService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"se{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
                 TCPCommandType.SendSingleValue));
             return;
         }
@@ -245,12 +214,15 @@ public class GoodsService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"se{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
                 TCPCommandType.SendSingleValue));
             return;
         }
 
-        TCPConnectorService.Instance.SendSingleValue(result);
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            result,
+            TCPCommandType.SendSingleValueLabeled));
+        //TCPConnectorService.Instance.SendSingleValue(result);
     }
     public void GenericGetAllResult(Object resultObj)
     {
@@ -261,11 +233,14 @@ public class GoodsService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"se{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
                 TCPCommandType.SendSingleValue));
             return;
         }
-
-        TCPConnectorService.Instance.SendMultipleValue(result);
+        
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            result,
+            TCPCommandType.SendMultipleValueLabeled));
+        //TCPConnectorService.Instance.SendMultipleValue(result);
     }
 }

@@ -187,7 +187,8 @@ public class AccountService
             return;
         }
 
-        Client modifyMe = GetClient(result.Query.Split(DataParsingExtension.QuerySplitter)[3]
+        Client modifyMe = GetClient(result.Query
+            .Split(DataParsingExtension.QuerySplitter)[3]
             .Split(DataParsingExtension.ValueSplitter)[0]);
 
         Account modifiers = result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount();
@@ -197,7 +198,7 @@ public class AccountService
         modifyMe.AdminKey = modifiers.AdminKey;
 
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"am{DataParsingExtension.QuerySplitter}s{DataParsingExtension.QuerySplitter}Данные изменены успешно)",
+            $"ams{DataParsingExtension.QuerySplitter}Данные изменены успешно)",
             TCPCommandType.SendSingleValue));
     }
 

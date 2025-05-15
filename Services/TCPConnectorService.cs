@@ -148,14 +148,14 @@ public class TCPConnectorService
             //     _connectedClients.Remove(tcpClient);
             // }
             if (tcpClient.Connected) Console.WriteLine($"Клиент {tcpClient.Client.RemoteEndPoint} отключен");
-            
+
             var client = AccountService.Instance.GetClient(tcpClient);
             if (client != null)
                 ServerApp.Instance.AddCommand(new ACommand(tcpClient,
                     client.Login + ',' +
                     client.Password,
                     ACommandType.AccountLogout));
-            
+
             tcpClient.Close();
         }
     }
@@ -236,9 +236,9 @@ public class TCPConnectorService
                                     GCommandType.GameModify, SendMultipleValue));
                                 break;
                         }
-            
+
                         break;
-                    
+
                     case 'p': // payment method
                         switch (request[2])
                         {
@@ -268,7 +268,7 @@ public class TCPConnectorService
                                     GCommandType.PaymentMethodModify, SendMultipleValue));
                                 break;
                         }
-            
+
                         break;
                     case 's': // seller
                         switch (request[2])
@@ -299,7 +299,7 @@ public class TCPConnectorService
                                     GCommandType.SellerModify, SendMultipleValue));
                                 break;
                         }
-            
+
                         break;
                     case 't': // good
                         switch (request[2])
@@ -330,7 +330,7 @@ public class TCPConnectorService
                                     GCommandType.GoodModify, SendMultipleValue));
                                 break;
                         }
-            
+
                         break;
                 }
             }
@@ -528,6 +528,18 @@ public class TCPConnectorService
 
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes((String)data.Output + '\n');
+        stream.Write(responseData, 0, responseData.Length);
+    }
+
+    public void SendSingleValueLabeled(Object dataObj) //
+    {
+        Command data = (Command)dataObj;
+
+        NetworkStream stream = data.Client.GetStream();
+
+        // Отправляем ответ
+        byte[] responseData = Encoding.UTF8.GetBytes(data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                                     DataParsingExtension.QuerySplitter + (String)data.Output + '\n'); // 
         stream.Write(responseData, 0, responseData.Length);
     }
 

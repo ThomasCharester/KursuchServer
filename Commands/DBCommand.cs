@@ -46,7 +46,7 @@ public class DBCommand : Command
                 case DBCommandType.ValueGetAll:
                 {
                     Output = DatabaseService.Instance
-                        .GetRowsOfAnyTable(Query.Split(DataParsingExtension.QuerySplitter)[1]).Result;
+                        .GetRowsOfAnyTable(Query).Result;
                     //
                 }
                     break;

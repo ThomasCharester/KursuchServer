@@ -14,7 +14,11 @@ public class DatabaseService
 
     public static DatabaseService Instance
     {
-        get { return instance; }
+        get
+        {
+            if(instance == null) return instance;
+            return instance;
+        }
         private set { instance = value; }
     }
 
@@ -33,16 +37,16 @@ public class DatabaseService
 
             var condition1 =
                 BuildSQLSequence(
-                    query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
-                    query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+                    query.Split(DataParsingExtension.QuerySplitter)[2].Split(DataParsingExtension.ValueSplitter),
+                    query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter));
 
             var condition2 =
                 BuildSQLCondition(
-                    query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
-                    query.Split(DataParsingExtension.QuerySplitter)[3].Split(DataParsingExtension.ValueSplitter));
+                    query.Split(DataParsingExtension.QuerySplitter)[2].Split(DataParsingExtension.ValueSplitter),
+                    query.Split(DataParsingExtension.QuerySplitter)[4].Split(DataParsingExtension.ValueSplitter));
 
             await using (var cmd = dataSource.CreateCommand(
-                             $"UPDATE {query.Split(DataParsingExtension.QuerySplitter)[2]} SET {condition1} WHERE {condition2}"))
+                             $"UPDATE {query.Split(DataParsingExtension.QuerySplitter)[3]} SET {condition1} WHERE {condition2}"))
             {
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -104,7 +108,7 @@ public class DatabaseService
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
         await using (var cmd = dataSource.CreateCommand(
-                         $"SELECT {query.Split(DataParsingExtension.ValueSplitter)[0]} FROM {query.Split(DataParsingExtension.ValueSplitter)[1]}"))
+                         $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]} FROM {query.Split(DataParsingExtension.QuerySplitter)[2]}"))
         {
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -213,15 +217,15 @@ public class DatabaseService
     {
         var condition =
             BuildSQLCondition(
-                query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter),
-                query.Split(DataParsingExtension.QuerySplitter)[0].Split(DataParsingExtension.ValueSplitter));
+                query.Split(DataParsingExtension.QuerySplitter)[2].Split(DataParsingExtension.ValueSplitter),
+                query.Split(DataParsingExtension.QuerySplitter)[1].Split(DataParsingExtension.ValueSplitter));
 
         await using var dataSource = NpgsqlDataSource.Create(_connectionString);
         try
         {
             // Если удалять несуществующую запись, то ошибки не будет
             await using (var cmd = dataSource.CreateCommand(
-                             $"DELETE FROM {query.Split(DataParsingExtension.QuerySplitter)[2]} WHERE {condition};"))
+                             $"DELETE FROM {query.Split(DataParsingExtension.QuerySplitter)[3]} WHERE {condition};"))
             {
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -263,7 +267,7 @@ public class DatabaseService
             await using var dataSource = NpgsqlDataSource.Create(_connectionString);
 
             await using (var cmd = dataSource.CreateCommand(
-                             $"INSERT INTO {query.Split(DataParsingExtension.QuerySplitter)[2]} ({query.Split(DataParsingExtension.QuerySplitter)[1]}) VALUES ({query.Split(DataParsingExtension.QuerySplitter)[0]});"))
+                             $"INSERT INTO {query.Split(DataParsingExtension.QuerySplitter)[3]} ({query.Split(DataParsingExtension.QuerySplitter)[2]}) VALUES ({query.Split(DataParsingExtension.QuerySplitter)[1]});"))
             {
                 await cmd.ExecuteNonQueryAsync();
             }

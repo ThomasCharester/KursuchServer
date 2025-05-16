@@ -201,6 +201,33 @@ public class TCPConnectorService
                             request.Split(DataParsingExtension.QuerySplitter)[1],
                             ACommandType.AccountAdd));
                         break;
+                    case 'k':
+                        switch (request[2])
+                        {
+                            case 'l':
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    ACommandType.GetAllAdminKeys));
+                                break;
+                            case 'a':
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    ACommandType.AdminKeyAdd));
+                                break;
+                            case 'd':
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    ACommandType.AdminKeyDelete));
+                                break;
+                            case 'm':
+                                ServerApp.Instance.AddCommand(new ACommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    ACommandType.AdminKeyModify));
+                                break;
+                        }
+
+                        break;
+
                 }
 
                 break;
@@ -333,6 +360,21 @@ public class TCPConnectorService
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
                                     GCommandType.GoodModify));
+                                break;
+                            case 'p':
+                                switch (request[3])
+                                {
+                                    case 'l':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.GoodGetAllAP));
+                                        break;
+                                    case 'd':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.GoodDeleteAP));
+                                        break;
+                                }
                                 break;
                         }
 
@@ -556,9 +598,14 @@ public class TCPConnectorService
 
         StringBuilder builder = new();
         builder.Append(data.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter);
-        foreach (var value in (List<String>)data.Output)
-            builder.Append(value + DataParsingExtension.AdditionalQuerySplitter);
-        builder.Remove(builder.Length - 1, 1);
+
+        var values = (List<String>)data.Output;
+        if(values.Count > 0)
+        {
+            foreach (var value in values)
+                builder.Append(value + DataParsingExtension.AdditionalQuerySplitter);
+            builder.Remove(builder.Length - 1, 1);
+        }
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(builder.ToString());
         stream.Write(responseData, 0, responseData.Length);
@@ -627,9 +674,9 @@ public class TCPConnectorService
                 TCPCommandType.SendSingleValue));
             return;
         }
-
+// надо ли кидать добавленные данные назад?
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"te{DataParsingExtension.QuerySplitter} {result.Query}",
+            result.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter,
             TCPCommandType.SendSingleValue));
     }
 }

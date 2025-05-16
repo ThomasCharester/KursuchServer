@@ -5,7 +5,7 @@ public class StaticDataService
     private static String configFileName = "conf.lox";
     private static StaticDataService instance = null;
 
-    public static StaticDataService Instance
+    public static StaticDataService? Instance
     {
         get
         {

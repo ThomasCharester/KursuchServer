@@ -27,7 +27,6 @@ namespace KursuchServer
         {
             InitializeServices();
             
-            // Запускаем фоновую задачу
             Instance._commandExecutionThread = new Thread(Instance.CommandTaskExecution);
             Instance._commandExecutionThread.Start();
             

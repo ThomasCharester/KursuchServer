@@ -206,16 +206,6 @@ public class AccountService
             return;
         }
 
-        Client modifyMe = GetClient(result.Query
-            .Split(DataParsingExtension.QuerySplitter)[3]
-            .Split(DataParsingExtension.ValueSplitter)[0]);
-
-        Account modifiers = result.Query.Split(DataParsingExtension.QuerySplitter)[0].StringToAccount();
-
-        modifyMe.Login = modifiers.Login;
-        modifyMe.Password = modifiers.Password;
-        modifyMe.AdminKey = modifiers.AdminKey;
-
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             $"ams{DataParsingExtension.QuerySplitter}Данные изменены успешно)",
             TCPCommandType.SendSingleValue));
@@ -292,5 +282,19 @@ public class AccountService
         return _authorizedClients.FirstOrDefault(x => x.Cocket == tcpClient) == null
             ? null
             : _authorizedClients.FirstOrDefault(x => x.Cocket == tcpClient);
+    }
+    public void RequestGetAllAccounts(ACommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"la{DataParsingExtension.QuerySplitter}*,{DataParsingExtension.ATableName}",
+                DBCommandType.ValueGetAll, TCPConnectorService.Instance.GenericGetAllResult));
+    }
+    public void RequestAddAccount(ACommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName}",
+                DBCommandType.ValueAdd,
+                TCPConnectorService.Instance.GenericResult));
     }
 }

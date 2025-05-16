@@ -59,55 +59,57 @@ public class GCommand : Command
                     break;
             }
 
-            if (AccountService.Instance.GetClient(Client)?.AdminKey != "NAN")
-                switch (SubType)
-                {
-                    case GCommandType.SellerAdd:
-                        GoodsService.Instance.RequestAddSeller(this);
-                        break;
-                    case GCommandType.SellerDelete:
-                        GoodsService.Instance.RequestDeleteSeller(this);
-                        break;
-                    case GCommandType.SellerModify:
-                        GoodsService.Instance.RequestModifySeller(this);
-                        break;
-                    case GCommandType.GoodAdd:
-                        GoodsService.Instance.RequestAddGood(this);
-                        break;
-                    case GCommandType.GoodDelete:
-                        GoodsService.Instance.RequestDeleteGood(this);
-                        break;
-                    case GCommandType.GoodModify:
-                        GoodsService.Instance.RequestModifyGood(this);
-                        break;
-                    // case GCommandType.AquireTypeAdd:
-                    //     GoodsService.Instance.RequestAddAquireType(this);
-                    //     break;
-                    // case GCommandType.AquireTypeDelete:
-                    //     GoodsService.Instance.RequestDeleteAquireType(this);
-                    //     break;
-                    // case GCommandType.AquireTypeModify:
-                    //     GoodsService.Instance.RequestModifyAquireType(this);
-                    //     break;
-                    case GCommandType.PaymentMethodAdd:
-                        GoodsService.Instance.RequestAddPaymentMethod(this);
-                        break;
-                    case GCommandType.PaymentMethodDelete:
-                        GoodsService.Instance.RequestDeletePaymentMethod(this);
-                        break;
-                    case GCommandType.PaymentMethodModify:
-                        GoodsService.Instance.RequestModifyPaymentMethod(this);
-                        break;
-                    case GCommandType.GameAdd:
-                        GoodsService.Instance.RequestAddGame(this);
-                        break;
-                    case GCommandType.GameDelete:
-                        GoodsService.Instance.RequestDeleteGame(this);
-                        break;
-                    case GCommandType.GameModify:
-                        GoodsService.Instance.RequestModifyGame(this);
-                        break;
-                }
+            var client = AccountService.Instance.GetClient(Client);
+            if (client is not { SV_Cheats: true }) return;
+            
+            switch (SubType)
+            {
+                case GCommandType.SellerAdd:
+                    GoodsService.Instance.RequestAddSeller(this);
+                    break;
+                case GCommandType.SellerDelete:
+                    GoodsService.Instance.RequestDeleteSeller(this);
+                    break;
+                case GCommandType.SellerModify:
+                    GoodsService.Instance.RequestModifySeller(this);
+                    break;
+                case GCommandType.GoodAdd:
+                    GoodsService.Instance.RequestAddGood(this);
+                    break;
+                case GCommandType.GoodDelete:
+                    GoodsService.Instance.RequestDeleteGood(this);
+                    break;
+                case GCommandType.GoodModify:
+                    GoodsService.Instance.RequestModifyGood(this);
+                    break;
+                // case GCommandType.AquireTypeAdd:
+                //     GoodsService.Instance.RequestAddAquireType(this);
+                //     break;
+                // case GCommandType.AquireTypeDelete:
+                //     GoodsService.Instance.RequestDeleteAquireType(this);
+                //     break;
+                // case GCommandType.AquireTypeModify:
+                //     GoodsService.Instance.RequestModifyAquireType(this);
+                //     break;
+                case GCommandType.PaymentMethodAdd:
+                    GoodsService.Instance.RequestAddPaymentMethod(this);
+                    break;
+                case GCommandType.PaymentMethodDelete:
+                    GoodsService.Instance.RequestDeletePaymentMethod(this);
+                    break;
+                case GCommandType.PaymentMethodModify:
+                    GoodsService.Instance.RequestModifyPaymentMethod(this);
+                    break;
+                case GCommandType.GameAdd:
+                    GoodsService.Instance.RequestAddGame(this);
+                    break;
+                case GCommandType.GameDelete:
+                    GoodsService.Instance.RequestDeleteGame(this);
+                    break;
+                case GCommandType.GameModify:
+                    GoodsService.Instance.RequestModifyGame(this);
+                    break;
+            }
         }
         catch (Exception ex)
         {

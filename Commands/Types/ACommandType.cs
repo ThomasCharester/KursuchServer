@@ -9,4 +9,5 @@ public enum ACommandType
     AccountModify,
     AccountModifySelf,
     AccountAdd,
+    GetAllAccounts
 }

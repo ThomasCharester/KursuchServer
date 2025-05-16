@@ -172,9 +172,9 @@ public class TCPConnectorService
                     //         DBCommandType.AccountAdd));
                     //     break;
                     case 'l':
-                        ServerApp.Instance.AddCommand(new DBCommand(tcpClient,
+                        ServerApp.Instance.AddCommand(new ACommand(tcpClient,
                             request.Split(DataParsingExtension.QuerySplitter)[1],
-                            DBCommandType.ValueGetAll, SendMultipleValue));
+                            ACommandType.GetAllAccounts));
                         break;
                     case 'd':
                         ServerApp.Instance.AddCommand(new ACommand(tcpClient,
@@ -218,27 +218,27 @@ public class TCPConnectorService
                             case 'g':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameGet, SendMultipleValue));
+                                    GCommandType.GameGet));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameGetAll, SendMultipleValue));
+                                    GCommandType.GameGetAll));
                                 break;
                             case 'a':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameAdd, SendMultipleValue));
+                                    GCommandType.GameAdd));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameDelete, SendMultipleValue));
+                                    GCommandType.GameDelete));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameModify, SendMultipleValue));
+                                    GCommandType.GameModify));
                                 break;
                         }
 
@@ -250,27 +250,27 @@ public class TCPConnectorService
                             case 'g':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodGet, SendMultipleValue));
+                                    GCommandType.PaymentMethodGet));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodGetAll, SendMultipleValue));
+                                    GCommandType.PaymentMethodGetAll));
                                 break;
                             case 'a':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodAdd, SendMultipleValue));
+                                    GCommandType.PaymentMethodAdd));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodDelete, SendMultipleValue));
+                                    GCommandType.PaymentMethodDelete));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodModify, SendMultipleValue));
+                                    GCommandType.PaymentMethodModify));
                                 break;
                         }
 
@@ -281,27 +281,27 @@ public class TCPConnectorService
                             case 'g':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerGet, SendMultipleValue));
+                                    GCommandType.SellerGet));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerGetAll, SendMultipleValue));
+                                    GCommandType.SellerGetAll));
                                 break;
                             case 'a':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerAdd, SendMultipleValue));
+                                    GCommandType.SellerAdd));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerDelete, SendMultipleValue));
+                                    GCommandType.SellerDelete));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerModify, SendMultipleValue));
+                                    GCommandType.SellerModify));
                                 break;
                         }
 
@@ -312,27 +312,27 @@ public class TCPConnectorService
                             case 'g':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodGet, SendMultipleValue));
+                                    GCommandType.GoodGet));
                                 break;
                             case 'l':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodGetAll, SendMultipleValue));
+                                    GCommandType.GoodGetAll));
                                 break;
                             case 'a':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodAdd, SendMultipleValue));
+                                    GCommandType.GoodAdd));
                                 break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodDelete, SendMultipleValue));
+                                    GCommandType.GoodDelete));
                                 break;
                             case 'm':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodModify, SendMultipleValue));
+                                    GCommandType.GoodModify));
                                 break;
                         }
 
@@ -595,5 +595,41 @@ public class TCPConnectorService
         {
             return false;
         }
+    }
+    
+    public void GenericGetAllResult(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+
+        if (result.Output == null) result.Query = "ERR";
+        
+        if (result.Query == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                TCPCommandType.SendSingleValue));
+            return;
+        }
+        
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            result,
+            TCPCommandType.SendMultipleValueLabeled));
+        //TCPConnectorService.Instance.SendMultipleValue(result);
+    }
+    public void GenericResult(Object resultObj)
+    {
+        var result = (DBCommand)resultObj;
+
+        if (result.Query == "ERR")
+        {
+            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                TCPCommandType.SendSingleValue));
+            return;
+        }
+
+        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
+            $"te{DataParsingExtension.QuerySplitter} {result.Query}",
+            TCPCommandType.SendSingleValue));
     }
 }

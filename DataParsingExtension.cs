@@ -29,6 +29,14 @@ public static class DataParsingExtension
     {
         return '\'' + str + '\'';
     }
+    public static String NANIsNULL(this String str)
+    {
+        return str == " = 'NAN'" ? " IS NULL" : str;
+    }
+    public static String NANToNULL(this String str)
+    {
+        return str == "'NAN'" ? "NULL" : str;
+    }
     public static String HumanReadable(this String str)
     {
         return str.Trim('\'');

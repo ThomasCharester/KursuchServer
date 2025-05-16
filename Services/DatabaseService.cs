@@ -79,7 +79,7 @@ public class DatabaseService
         StringBuilder condition = new();
 
         for (int i = 0; i < dataToCheck.Length; i++)
-            condition.Append(columnNames[i] + " = " + dataToCheck[i] + " AND ");
+            condition.Append(columnNames[i] + (" = " + dataToCheck[i]).NANIsNULL() + " AND ");
 
         condition.Remove(condition.Length - 5, 5);
         return condition;
@@ -91,7 +91,7 @@ public class DatabaseService
         StringBuilder condition = new();
 
         for (int i = 0; i < dataToCheck.Length; i++)
-            condition.Append(columnNames[i] + " = " + dataToCheck[i] + ",");
+            condition.Append(columnNames[i] + " = " + dataToCheck[i].NANToNULL() + ",");
 
         condition.Remove(condition.Length - 1, 1);
         return condition;

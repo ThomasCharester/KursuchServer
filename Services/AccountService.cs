@@ -41,7 +41,7 @@ public class AccountService
 
         ServerApp.Instance.AddCommand(
             new DBCommand(result.Client,
-                output.Split(DataParsingExtension.ValueSplitter)[2].DBReadable() +
+                output.Split(DataParsingExtension.ValueSplitter)[0].DBReadable() +
                 $"{DataParsingExtension.QuerySplitter}accountLogin{DataParsingExtension.QuerySplitter}{DataParsingExtension.STableName}",
                 DBCommandType.CheckData,
                 MakeSeller));
@@ -124,7 +124,7 @@ public class AccountService
             result.Client));
 
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"los{DataParsingExtension.QuerySplitter} {result.Query}",
+            $"los{DataParsingExtension.QuerySplitter}{result.Query}",
             TCPCommandType.SendSingleValue));
     }
 

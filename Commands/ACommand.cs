@@ -46,9 +46,6 @@ public class ACommand : Command
 
             switch (SubType)
             {
-                case ACommandType.AccountLogin:
-                    AccountService.Instance.RequestLogin(this);
-                    break;
                 case ACommandType.AccountAdd:
                     AccountService.Instance.RequestAddAccount(this);
                     break;
@@ -75,9 +72,6 @@ public class ACommand : Command
                 case ACommandType.GetAllAccounts:
                     AccountService.Instance.RequestGetAllAccounts(this);
                     break;
-                case ACommandType.AccountRegister:
-                    AccountService.Instance.RequestRegister(this);
-                    break;
                 case ACommandType.AccountDelete:
                 {
                     var invoker = AccountService.Instance.GetClient(Client);
@@ -92,18 +86,8 @@ public class ACommand : Command
                     AccountService.Instance.RequestDelete(this);
                 }
                     break;
-                case ACommandType.AccountLogout:
-                    AccountService.Instance.Logout(this);
-                    break;
                 case ACommandType.AccountModify:
-                {
                     AccountService.Instance.RequestModify(this);
-                }
-                    break;
-                case ACommandType.AccountModifySelf:
-                {
-                    AccountService.Instance.RequestModifySelf(this);
-                }
                     break;
             }
         }

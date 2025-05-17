@@ -50,6 +50,14 @@ public class DBCommand : Command
                     //
                 }
                     break;
+
+                case DBCommandType.ValueGetAllCondition:
+                {
+                    Output = DatabaseService.Instance
+                        .GetRowsOfAnyTableCondition(Query).Result;
+                    //
+                }
+                    break;
                 case DBCommandType.ValueGet:
                 {
                     Output = DatabaseService.Instance.GetValueAnyTable(Query).Result;

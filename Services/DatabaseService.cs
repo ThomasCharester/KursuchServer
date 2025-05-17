@@ -144,6 +144,53 @@ public class DatabaseService
         return items;
     }
 
+    public async Task<List<String>> GetRowsOfAnyTableCondition(String query) //
+    {
+        List<String> items = new();
+        StringBuilder builder = new();
+        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+        var condition =
+            BuildSQLCondition(
+                query.Split(DataParsingExtension.QuerySplitter)[4].Split(DataParsingExtension.ValueSplitter),
+                query.Split(DataParsingExtension.QuerySplitter)[3].Split(DataParsingExtension.ValueSplitter));
+        
+        await using (var cmd = dataSource.CreateCommand(
+                         $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]} FROM {query.Split(DataParsingExtension.QuerySplitter)[2]} WHERE {condition}"))
+        {
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        if (reader.GetFieldType(i) == typeof(string))
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetString(i) + ',');
+                            else builder.Append("NAN,");
+                        }
+                        else if (reader.GetFieldType(i) == typeof(int))
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetInt32(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
+                        else if (reader.GetFieldType(i) == typeof(bool))
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetBoolean(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
+                    }
+
+                    builder.Remove(builder.Length - 1, 1);
+
+                    items.Add(builder.ToString());
+                    builder.Clear();
+                }
+            }
+        }
+
+        return items;
+    }
     public async Task<String> GetValueAnyTable(String query) //
     {
         StringBuilder value = new();
@@ -178,6 +225,8 @@ public class DatabaseService
                             else value.Append("NAN,");
                         }
 
+                    if (value.Length == 0) return "ERR";
+                    
                     value.Remove(value.Length - 1, 1);
                     return value.ToString();
                 }

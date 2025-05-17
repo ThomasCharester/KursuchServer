@@ -60,6 +60,9 @@ public class GCommand : Command
                 case GCommandType.GoodGetAllAP:
                     GoodsService.Instance.RequestGetAllGoodsAP(this);
                     break;
+                case GCommandType.GoodGetAllSeller:
+                    GoodsService.Instance.RequestGetAllGoodsSeller(this);
+                    break;
             }
 
             var client = AccountService.Instance.GetClient(Client);
@@ -87,6 +90,9 @@ public class GCommand : Command
                     break;
                 case GCommandType.GoodDeleteAP:
                     GoodsService.Instance.RequestDeleteGoodAP(this);
+                    break;
+                case GCommandType.GoodDeleteSeller:
+                    GoodsService.Instance.RequestDeleteGoodSeller(this);
                     break;
                 // case GCommandType.AquireTypeAdd:
                 //     GoodsService.Instance.RequestAddAquireType(this);

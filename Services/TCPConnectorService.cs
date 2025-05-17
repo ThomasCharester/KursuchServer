@@ -376,6 +376,21 @@ public class TCPConnectorService
                                         break;
                                 }
                                 break;
+                            case 's':
+                                switch (request[3])
+                                {
+                                    case 'l':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.GoodGetAllSeller));
+                                        break;
+                                    case 'd':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.GoodDeleteSeller));
+                                        break;
+                                }
+                                break;
                         }
 
                         break;

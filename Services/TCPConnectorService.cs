@@ -346,11 +346,6 @@ public class TCPConnectorService
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
                                     GCommandType.GoodGetAll));
                                 break;
-                            case 'a':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodAdd));
-                                break;
                             case 'd':
                                 ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
@@ -384,10 +379,20 @@ public class TCPConnectorService
                                             request.Split(DataParsingExtension.QuerySplitter)[1],
                                             GCommandType.GoodGetAllSeller));
                                         break;
+                                    case 'm':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.GoodModifySeller));
+                                        break;
                                     case 'd':
                                         ServerApp.Instance.AddCommand(new GCommand(tcpClient,
                                             request.Split(DataParsingExtension.QuerySplitter)[1],
                                             GCommandType.GoodDeleteSeller));
+                                        break;
+                                    case 'a':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Remove(0, request.IndexOf(DataParsingExtension.QuerySplitter) + 1),
+                                            GCommandType.GoodAdd));
                                         break;
                                 }
                                 break;

@@ -63,6 +63,12 @@ public class DBCommand : Command
                     Output = DatabaseService.Instance.GetValueAnyTable(Query).Result;
                 }
                     break;
+                case DBCommandType.ValueGetFirstElementQuery:
+                {
+                    Output = DatabaseService.Instance.GetValueAnyTable(Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0]).Result;
+                    Query = Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1];
+                }
+                    break;
 
                 case DBCommandType.CheckData:
                 {

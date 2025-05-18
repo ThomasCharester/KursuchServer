@@ -26,8 +26,23 @@ public class GoodsService
     public void RequestAddGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                       ";accountLogin;" + DataParsingExtension.STableName +
+                                       DataParsingExtension.AdditionalQuerySplitter
+                                       + data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
+                DBCommandType.ValueGetFirstElementQuery,
+                ProcessAddGood));
+    }
+
+    public void ProcessAddGood(Object dataObj) //
+    {
+        DBCommand data = (DBCommand)dataObj;
+        var seller = (string)data.Output;
+        if (seller == "ERR") return;
+
+        ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"gta;{data.Query};goodName,sellerName,gameName,description,paymentMethod,stock,price;{DataParsingExtension.GOTableName}",
+                $"gtsa;{data.Query},{seller.Split(DataParsingExtension.ValueSplitter)[0].DBReadable()};goodName,gameName,description,paymentMethod,stock,price,sellerName;{DataParsingExtension.GOTableName}",
                 DBCommandType.ValueAdd,
                 TCPConnectorService.Instance.GenericResult));
     }
@@ -119,7 +134,7 @@ public class GoodsService
     public void RequestModifyGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, "gtm;" +
+            new DBCommand(data.Client, "gtsm;" +
                                        data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
                                        $";goodName,sellerName,gameName,description,paymentMethod,stock,price;{DataParsingExtension.GOTableName};" +
                                        data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
@@ -164,6 +179,7 @@ public class GoodsService
                                        $";goodName;{DataParsingExtension.GOTableName}",
                 DBCommandType.ValueGet, GenericGetResult));
     }
+
     public void RequestGetGoodEdit(GCommand data) //
     {
         ServerApp.Instance.AddCommand(

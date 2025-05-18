@@ -8,5 +8,6 @@ public enum DBCommandType
     ValueDelete,
     ValueModify,
     CheckData,
-    ValueGetAllCondition
+    ValueGetAllCondition,
+    ValueGetFirstElementQuery
 }

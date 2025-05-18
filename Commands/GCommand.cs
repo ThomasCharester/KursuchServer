@@ -85,7 +85,7 @@ public class GCommand : Command
                 case GCommandType.GoodDelete:
                     GoodsService.Instance.RequestDeleteGood(this);
                     break;
-                case GCommandType.GoodModify:
+                case GCommandType.GoodModifySeller:
                     GoodsService.Instance.RequestModifyGood(this);
                     break;
                 case GCommandType.GoodDeleteAP:

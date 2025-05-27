@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text;
 using KursuchServer.DataStructures;
 
@@ -17,13 +18,21 @@ public static class DataParsingExtension
     public static readonly String STableName = "Sellers";
     public static readonly String GOTableName = "Goods";
 
-    public const string DiseasesTable = "Diseases";
-    public const string MedicinesTable = "Medicines";
-    public const string PlantsTable = "Plants";
-    public const string MedicineDiseasesTable = "MedicineDiseases";
-    public const string PlantMedicinesTable = "PlantMedicines";
-    public const string DosagesTable = "Dosages";
+    public static readonly string DiseasesTable = "Diseases";
+    public static readonly string MedicinesTable = "Medicines";
+    public static readonly string PlantsTable = "Plants";
+    public static readonly string MedicineDiseasesTable = "MedicineDiseases";
+    public static readonly string PlantsMedicinesTable = "PlantsMedicines";
+    public static readonly string PlantsDiseasesTable = "PlantsDiseases";
 
+    public static Vector2 StringToVector2(this string vector)
+    {
+        return new Vector2(float.Parse(vector.Split(ValueSplitter)[0]), float.Parse(vector.Split(ValueSplitter)[1]));
+    }
+    public static String Vector2ToString(this Vector2 vec)
+    {
+        return vec.X.ToString() + ValueSplitter + vec.Y.ToString();
+    }
     public static String DBReadable(this String str)
     {
         return '\'' + str + '\'';

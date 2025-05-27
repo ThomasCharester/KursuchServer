@@ -38,34 +38,6 @@ public class AccountService
                 $";adminKey;{DataParsingExtension.AKTableName}",
                 DBCommandType.CheckData,
                 GiveCheats));
-
-        ServerApp.Instance.AddCommand(
-            new DBCommand(result.Client,
-                output.Split(DataParsingExtension.ValueSplitter)[0].DBReadable() +
-                $"{DataParsingExtension.QuerySplitter}accountLogin{DataParsingExtension.QuerySplitter}{DataParsingExtension.STableName}",
-                DBCommandType.CheckData,
-                MakeSeller));
-    }
-
-    public void MakeSeller(Object resultObj)
-    {
-        var result = (DBCommand)resultObj;
-
-
-        if (result.Query == "ERR")
-        {
-            ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"loe{DataParsingExtension.QuerySplitter}{result.Query}",
-                TCPCommandType.SendSingleValue));
-
-            return;
-        }
-
-        GetClient(result.Client).IsSeller = true;
-        
-        ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-            $"lod{DataParsingExtension.QuerySplitter}{result.Query}",
-            TCPCommandType.SendSingleValue));
     }
 
     public void GiveCheats(Object resultObj)

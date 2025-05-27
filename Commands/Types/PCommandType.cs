@@ -31,9 +31,8 @@ public enum PCommandType
     PlantMedicineDelete,
     PlantMedicineGetAll,
     
-    // Дозировки
-    DosageAdd,
-    DosageDelete,
-    DosageGet,
-    DosageGetAll
+    PlantDiseaseAdd,
+    PlantDiseaseDelete,
+    PlantDiseaseGetAll,
+    
 }

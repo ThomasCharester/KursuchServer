@@ -167,10 +167,6 @@ public class TCPConnectorService
             case 'a':
                 switch (request[1])
                 {
-                    // case 'a':
-                    //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(DataParsingExtension.QuerySplitter)[1],
-                    //         DBCommandType.AccountAdd));
-                    //     break;
                     case 'l':
                         ServerApp.Instance.AddCommand(new ACommand(tcpClient,
                             request.Split(DataParsingExtension.QuerySplitter)[1],
@@ -227,174 +223,150 @@ public class TCPConnectorService
                         }
 
                         break;
-
                 }
 
                 break;
-            case 'g':
+            case 'p':
             {
                 switch (request[1])
                 {
-                    // case 'a':
-                    //     ServerApp.Instance.AddCommand(new DBCommand(tcpClient, request.Split(DataParsingExtension.QuerySplitter)[1],
-                    //         DBCommandType.AccountAdd));
-                    //     break;
-                    case 'g': // game
+                    case 'd': // disease
                         switch (request[2])
                         {
-                            case 'g':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameGet));
-                                break;
                             case 'l':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameGetAll));
+                                    PCommandType.DiseaseGetAll));
                                 break;
                             case 'a':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameAdd));
+                                    PCommandType.DiseaseAdd));
                                 break;
                             case 'd':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameDelete));
+                                    PCommandType.DiseaseDelete));
                                 break;
                             case 'm':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GameModify));
+                                    PCommandType.DiseaseModify));
                                 break;
                         }
 
                         break;
-
-                    case 'p': // payment method
+                    case 'm':
                         switch (request[2])
                         {
-                            case 'g':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodGet));
-                                break;
                             case 'l':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodGetAll));
+                                    PCommandType.MedicineGetAll));
                                 break;
                             case 'a':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodAdd));
-                                break;
-                            case 'd':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodDelete));
+                                    PCommandType.MedicineAdd));
                                 break;
                             case 'm':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.PaymentMethodModify));
+                                    PCommandType.MedicineModify));
+                                break;
+                            case 'd':
+                                if (request.Length >= 4)
+                                    switch (request[3])
+                                    {
+                                        case 'l':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.MedicineDiseaseGetAll));
+                                            break;
+                                        case 'a':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.MedicineDiseaseAdd));
+                                            break;
+                                        case 'd':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.MedicineDiseaseDelete));
+                                            break;
+                                    }
+                                else
+                                    ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                        request.Split(DataParsingExtension.QuerySplitter)[1],
+                                        PCommandType.MedicineDelete));
+
                                 break;
                         }
 
                         break;
-                    case 's': // seller
+                    case 'p':
                         switch (request[2])
                         {
-                            case 'g':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerGet));
-                                break;
                             case 'l':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerGetAll));
+                                    PCommandType.PlantGetAll));
                                 break;
                             case 'a':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                ServerApp.Instance.AddCommand(new PCommand(tcpClient,
                                     request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerAdd));
-                                break;
-                            case 'd':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerDelete));
+                                    PCommandType.PlantAdd));
                                 break;
                             case 'm':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.SellerModify));
-                                break;
-                        }
+                                if (request.Length >= 4)
+                                    switch (request[3])
+                                    {
+                                        case 'l':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantMedicineGetAll));
+                                            break;
+                                        case 'a':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantMedicineAdd));
+                                            break;
+                                        case 'd':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantMedicineDelete));
+                                            break;
+                                    }
+                                else
+                                    ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                        request.Split(DataParsingExtension.QuerySplitter)[1],
+                                        PCommandType.PlantModify));
 
-                        break;
-                    case 't': // good
-                        switch (request[2])
-                        {
-                            case 'g':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodGet));
-                                break;
-                            case 'l':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodGetAll));
                                 break;
                             case 'd':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodDelete));
-                                break;
-                            case 'm':
-                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                    request.Split(DataParsingExtension.QuerySplitter)[1],
-                                    GCommandType.GoodModify));
-                                break;
-                            case 'p':
-                                switch (request[3])
-                                {
-                                    case 'l':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Split(DataParsingExtension.QuerySplitter)[1],
-                                            GCommandType.GoodGetAllAP));
-                                        break;
-                                    case 'd':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Split(DataParsingExtension.QuerySplitter)[1],
-                                            GCommandType.GoodDeleteAP));
-                                        break;
-                                }
-                                break;
-                            case 's':
-                                switch (request[3])
-                                {
-                                    case 'l':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Split(DataParsingExtension.QuerySplitter)[1],
-                                            GCommandType.GoodGetAllSeller));
-                                        break;
-                                    case 'm':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Split(DataParsingExtension.QuerySplitter)[1],
-                                            GCommandType.GoodModifySeller));
-                                        break;
-                                    case 'd':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Split(DataParsingExtension.QuerySplitter)[1],
-                                            GCommandType.GoodDeleteSeller));
-                                        break;
-                                    case 'a':
-                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
-                                            request.Remove(0, request.IndexOf(DataParsingExtension.QuerySplitter) + 1),
-                                            GCommandType.GoodAdd));
-                                        break;
-                                }
+                                if (request.Length >= 4)
+                                    switch (request[3])
+                                    {
+                                        case 'l':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantDiseaseGetAll));
+                                            break;
+                                        case 'a':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantDiseaseAdd));
+                                            break;
+                                        case 'd':
+                                            ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                                request.Split(DataParsingExtension.QuerySplitter)[1],
+                                                PCommandType.PlantDiseaseDelete));
+                                            break;
+                                    }
+                                else
+                                    ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                                        request.Split(DataParsingExtension.QuerySplitter)[1],
+                                        PCommandType.PlantDelete));
+
                                 break;
                         }
 
@@ -433,7 +405,8 @@ public class TCPConnectorService
 
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                                                     DataParsingExtension.QuerySplitter + (String)data.Output + '\n'); // 
+                                                     DataParsingExtension.QuerySplitter + (String)data.Output +
+                                                     '\n'); // 
         stream.Write(responseData, 0, responseData.Length);
     }
 
@@ -447,12 +420,13 @@ public class TCPConnectorService
         builder.Append(data.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter);
 
         var values = (List<String>)data.Output;
-        if(values.Count > 0)
+        if (values.Count > 0)
         {
             foreach (var value in values)
                 builder.Append(value + DataParsingExtension.AdditionalQuerySplitter);
             builder.Remove(builder.Length - 1, 1);
         }
+
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(builder.ToString());
         stream.Write(responseData, 0, responseData.Length);
@@ -490,13 +464,13 @@ public class TCPConnectorService
             return false;
         }
     }
-    
+
     public void GenericGetAllResult(Object resultObj)
     {
         var result = (DBCommand)resultObj;
 
         if (result.Output == null) result.Query = "ERR";
-        
+
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
@@ -504,12 +478,13 @@ public class TCPConnectorService
                 TCPCommandType.SendSingleValue));
             return;
         }
-        
+
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             result,
             TCPCommandType.SendMultipleValueLabeled));
         //TCPConnectorService.Instance.SendMultipleValue(result);
     }
+
     public void GenericResult(Object resultObj)
     {
         var result = (DBCommand)resultObj;
@@ -521,6 +496,7 @@ public class TCPConnectorService
                 TCPCommandType.SendSingleValue));
             return;
         }
+
 // надо ли кидать добавленные данные назад?
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             result.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter,

@@ -50,7 +50,7 @@ public class PlantsService
     public void RequestAddDiseaseMedicine(PCommand data) //
     {
         ServerApp.Instance.AddCommand(
-            new DBCommand(data.Client, $"pdma;{data.Query};diseaseId,medicineId,minDosage,maxDosage;{DataParsingExtension.MedicineDiseasesTable}",
+            new DBCommand(data.Client, $"pmda;{data.Query};diseaseId,medicineId,minDosage,maxDosage;{DataParsingExtension.MedicineDiseasesTable}",
                 DBCommandType.ValueAdd,
                 TCPConnectorService.Instance.GenericResult));
     }
@@ -203,7 +203,7 @@ public class PlantsService
     {
         ServerApp.Instance.AddCommand(
             new DBCommand(data.Client,
-                $"ldm{DataParsingExtension.QuerySplitter}*{DataParsingExtension.QuerySplitter}{DataParsingExtension.MedicineDiseasesTable}",
+                $"lmd{DataParsingExtension.QuerySplitter}*{DataParsingExtension.QuerySplitter}{DataParsingExtension.MedicineDiseasesTable}",
                 DBCommandType.ValueGetAll, TCPConnectorService.Instance.GenericGetAllResult));
     }
 

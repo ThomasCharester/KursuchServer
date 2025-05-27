@@ -126,6 +126,11 @@ public class DatabaseService
                             if (!reader.IsDBNull(i)) builder.Append(reader.GetInt32(i).ToString() + ',');
                             else builder.Append("NAN,");
                         }
+                        else if (reader.GetFieldType(i) == typeof(decimal))
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetDecimal(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
                         else if (reader.GetFieldType(i) == typeof(bool))
                         {
                             if (!reader.IsDBNull(i)) builder.Append(reader.GetBoolean(i).ToString() + ',');
@@ -172,6 +177,11 @@ public class DatabaseService
                         else if (reader.GetFieldType(i) == typeof(int))
                         {
                             if (!reader.IsDBNull(i)) builder.Append(reader.GetInt32(i).ToString() + ',');
+                            else builder.Append("NAN,");
+                        }
+                        else if (reader.GetFieldType(i) == typeof(decimal))
+                        {
+                            if (!reader.IsDBNull(i)) builder.Append(reader.GetDecimal(i).ToString() + ',');
                             else builder.Append("NAN,");
                         }
                         else if (reader.GetFieldType(i) == typeof(bool))

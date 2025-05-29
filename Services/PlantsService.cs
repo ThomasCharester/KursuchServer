@@ -190,6 +190,13 @@ public class PlantsService
                 $"lpm{DataParsingExtension.QuerySplitter}*{DataParsingExtension.QuerySplitter}{DataParsingExtension.PlantsMedicinesTable}",
                 DBCommandType.ValueGetAll, TCPConnectorService.Instance.GenericGetAllResult));
     }
+    public void RequestGetAllMedicinesDiseasePlant(PCommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, 
+$"lmdp{DataParsingExtension.QuerySplitter}{data.Query.Split(DataParsingExtension.QuerySplitter)[0]}{DataParsingExtension.QuerySplitter}*{DataParsingExtension.QuerySplitter}{DataParsingExtension.PlantsMedicinesTable}",
+                DBCommandType.ValueGetAll, TCPConnectorService.Instance.GenericGetAllResult));
+    }
 
     public void RequestGetAllPlantsDiseases(PCommand data) //
     {

@@ -9,5 +9,6 @@ public enum DBCommandType
     ValueModify,
     CheckData,
     ValueGetAllCondition,
-    ValueGetFirstElementQuery
+    ValueGetFirstElementQuery,
+    ValueGetAllJoined
 }

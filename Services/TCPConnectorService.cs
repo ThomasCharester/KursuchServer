@@ -230,6 +230,16 @@ public class TCPConnectorService
             {
                 switch (request[1])
                 {
+                    case 'l':
+                        ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                            PCommandType.LoadAll));
+                        break;
+                    case 'z': // disease
+                        ServerApp.Instance.AddCommand(new PCommand(tcpClient,
+                            request,
+                            PCommandType.CalculateZones));
+                        break;
                     case 'd': // disease
                         switch (request[2])
                         {
@@ -384,6 +394,7 @@ public class TCPConnectorService
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(data.Query + '\n');
         stream.Write(responseData, 0, responseData.Length);
+        stream.Flush();
     }
 
     public void SendSingleValue(Object dataObj) //
@@ -426,10 +437,11 @@ public class TCPConnectorService
                 builder.Append(value + DataParsingExtension.AdditionalQuerySplitter);
             builder.Remove(builder.Length - 1, 1);
         }
-
+        
         // Отправляем ответ
         byte[] responseData = Encoding.UTF8.GetBytes(builder.ToString());
         stream.Write(responseData, 0, responseData.Length);
+        stream.Flush();
     }
 
     public void KillClient(TCPCommand data) //

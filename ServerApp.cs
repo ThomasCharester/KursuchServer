@@ -38,7 +38,7 @@ namespace KursuchServer
             while (true)
             {
                 if(_commands.Count > 0) _commands.Dequeue().Execute();
-                else Thread.Sleep(100);
+                Thread.Sleep(10);
             }
         }
 

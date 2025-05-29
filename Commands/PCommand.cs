@@ -15,7 +15,7 @@ public class PCommand: Command
     public PCommand(TcpClient tcpClient, String query, PCommandType subType, Action<Object> outputFunc = null)
     {
         OutputFunc = outputFunc;
-        Type = CommandType.TCPCommand;
+        Type = CommandType.PCommand;
         Client = tcpClient;
         Query = query;
         SubType = subType;
@@ -43,6 +43,17 @@ public class PCommand: Command
                     PlantsService.Instance.RequestGetAllDiseasesMedicines(this);
                     break;
                 case PCommandType.PlantDiseaseGetAll:
+                    PlantsService.Instance.RequestGetAllPlantsDiseases(this);
+                    break;
+                case PCommandType.CalculateZones:
+                    ZoneCalculator.Instance.Calculate(this);
+                    break;
+                case PCommandType.LoadAll:
+                    PlantsService.Instance.RequestGetAllPlants(this); 
+                    PlantsService.Instance.RequestGetAllDiseases(this); 
+                    PlantsService.Instance.RequestGetAllMedicines(this); 
+                    PlantsService.Instance.RequestGetAllPlantsMedicines(this); 
+                    PlantsService.Instance.RequestGetAllDiseasesMedicines(this);
                     PlantsService.Instance.RequestGetAllPlantsDiseases(this);
                     break;
             }

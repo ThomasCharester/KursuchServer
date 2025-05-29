@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using System.Text;
 using KursuchServer.DataStructures;
@@ -27,37 +28,46 @@ public static class DataParsingExtension
 
     public static Vector2 StringToVector2(this string vector)
     {
-        return new Vector2(float.Parse(vector.Split(ValueSplitter)[0]), float.Parse(vector.Split(ValueSplitter)[1]));
+        return new Vector2(float.Parse(vector.Split(ValueSplitter)[0], CultureInfo.InvariantCulture),
+            float.Parse(vector.Split(ValueSplitter)[1], CultureInfo.InvariantCulture));
     }
+
     public static String Vector2ToString(this Vector2 vec)
     {
         return vec.X.ToString() + ValueSplitter + vec.Y.ToString();
     }
+
     public static String DBReadable(this String str)
     {
         return '\'' + str + '\'';
     }
+
     public static String NANIsNULL(this String str)
     {
         return str == " = 'NAN'" ? " IS NULL" : str;
     }
+
     public static String NANToNULL(this String str)
     {
         return str == "'NAN'" ? "NULL" : str;
     }
+
     public static String HumanReadable(this String str)
     {
-        return str.Replace("\'","");
+        return str.Replace("\'", "");
     }
+
     public static String ClientToStringVS(this Client client)
     {
-        return client.Login.DBReadable()+ValueSplitter+client.Password.DBReadable();
+        return client.Login.DBReadable() + ValueSplitter + client.Password.DBReadable();
     }
+
     public static Account StringToAccount(this String account)
     {
         return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1],
             account.Split(ValueSplitter)[2]);
     }
+
     public static Account StringToAccountS(this String account)
     {
         return new Account(account.Split(ValueSplitter)[0], account.Split(ValueSplitter)[1]);

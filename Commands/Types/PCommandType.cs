@@ -34,5 +34,7 @@ public enum PCommandType
     PlantDiseaseAdd,
     PlantDiseaseDelete,
     PlantDiseaseGetAll,
-    
+
+    CalculateZones,
+    LoadAll
 }

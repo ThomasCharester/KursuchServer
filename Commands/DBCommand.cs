@@ -58,6 +58,12 @@ public class DBCommand : Command
                     //
                 }
                     break;
+                case DBCommandType.ValueGetAllJoined:
+                {
+                    Output = DatabaseService.Instance
+                        .GetRowsOfAnyTableJoined(Query).Result;
+                }
+                    break;
                 case DBCommandType.ValueGet:
                 {
                     Output = DatabaseService.Instance.GetValueAnyTable(Query).Result;

@@ -13,12 +13,7 @@ public static class DataParsingExtension
 
     public static readonly String ATableName = "Accounts";
     public static readonly String AKTableName = "AdminKeys";
-
-    public static readonly String GATableName = "Games";
-    public static readonly String PMTableName = "PaymentMethod";
-    public static readonly String STableName = "Sellers";
-    public static readonly String GOTableName = "Goods";
-
+    
     public static readonly string DiseasesTable = "Diseases";
     public static readonly string MedicinesTable = "Medicines";
     public static readonly string PlantsTable = "Plants";
@@ -30,11 +25,6 @@ public static class DataParsingExtension
     {
         return new Vector2(float.Parse(vector.Split(ValueSplitter)[0], CultureInfo.InvariantCulture),
             float.Parse(vector.Split(ValueSplitter)[1], CultureInfo.InvariantCulture));
-    }
-
-    public static String Vector2ToString(this Vector2 vec)
-    {
-        return vec.X.ToString() + ValueSplitter + vec.Y.ToString();
     }
 
     public static String DBReadable(this String str)

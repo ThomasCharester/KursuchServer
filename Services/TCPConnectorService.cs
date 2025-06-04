@@ -397,30 +397,6 @@ public class TCPConnectorService
         stream.Flush();
     }
 
-    public void SendSingleValue(Object dataObj) //
-    {
-        Command data = (Command)dataObj;
-
-        NetworkStream stream = data.Client.GetStream();
-
-        // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes((String)data.Output + '\n');
-        stream.Write(responseData, 0, responseData.Length);
-    }
-
-    public void SendSingleValueLabeled(Object dataObj) //
-    {
-        Command data = (Command)dataObj;
-
-        NetworkStream stream = data.Client.GetStream();
-
-        // Отправляем ответ
-        byte[] responseData = Encoding.UTF8.GetBytes(data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
-                                                     DataParsingExtension.QuerySplitter + (String)data.Output +
-                                                     '\n'); // 
-        stream.Write(responseData, 0, responseData.Length);
-    }
-
     public void SendMultipleValue(Object dataObj) //
     {
         Command data = (Command)dataObj;
@@ -486,7 +462,7 @@ public class TCPConnectorService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                $"es{DataParsingExtension.QuerySplitter}Ошибка операции с базой данных",
                 TCPCommandType.SendSingleValue));
             return;
         }
@@ -504,12 +480,11 @@ public class TCPConnectorService
         if (result.Query == "ERR")
         {
             ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
-                $"es{DataParsingExtension.QuerySplitter}TF{DataParsingExtension.QuerySplitter}Ошибка",
+                $"es{DataParsingExtension.QuerySplitter}Ошибка операции с базой данных",
                 TCPCommandType.SendSingleValue));
             return;
         }
 
-// надо ли кидать добавленные данные назад?
         ServerApp.Instance.AddCommand(new TCPCommand(result.Client,
             result.Query.Split(DataParsingExtension.QuerySplitter)[0] + DataParsingExtension.QuerySplitter,
             TCPCommandType.SendSingleValue));

@@ -1,7 +1,4 @@
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Text;
-using KursuchServer.DataStructures;
 using Npgsql;
 
 namespace KursuchServer.Services;
@@ -349,26 +346,6 @@ public class DatabaseService
         return value.ToString();
     }
 
-    public async Task<bool> DeleteValueFromAnyTable(String tableName, String condition) //
-    {
-        await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-        try
-        {
-            // Если удалять несуществующую запись, то ошибки не будет
-            await using (var cmd = dataSource.CreateCommand($"DELETE FROM {tableName} WHERE {condition};"))
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"ew;{ex.Message}");
-            return false;
-        }
-    }
-
     public async Task<bool> DeleteValueFromAnyTable(String query) //
     {
         var condition =
@@ -382,27 +359,6 @@ public class DatabaseService
             // Если удалять несуществующую запись, то ошибки не будет
             await using (var cmd = dataSource.CreateCommand(
                              $"DELETE FROM {query.Split(DataParsingExtension.QuerySplitter)[3]} WHERE {condition};"))
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"ew;{ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> AddValueToAnyTable(String tableName, String columns, String values) //
-    {
-        try
-        {
-            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
-
-            await using (var cmd = dataSource.CreateCommand(
-                             $"INSERT INTO {tableName} ({columns}) VALUES ({values});"))
             {
                 await cmd.ExecuteNonQueryAsync();
             }

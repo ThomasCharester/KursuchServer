@@ -32,6 +32,7 @@ public class AccountService
         if (result.Query == "ERR") return;
 
         var output = (String)result.Output;
+        
         ServerApp.Instance.AddCommand(
             new DBCommand(result.Client,
                 output.Split(DataParsingExtension.ValueSplitter)[2].DBReadable() +

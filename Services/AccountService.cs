@@ -234,6 +234,10 @@ public class AccountService
                 "aa;" + data.Query + $";login,password,adminKey;{DataParsingExtension.ATableName}",
                 DBCommandType.ValueAdd,
                 TCPConnectorService.Instance.GenericResult));
+        
+        ServerApp.Instance.AddCommand(new GCommand(data.Client,
+            data.Query.Split(DataParsingExtension.ValueSplitter)[0],
+            GCommandType.CartAdd));
     }
 
     public void RequestGetAllAdminKeys(ACommand data) //

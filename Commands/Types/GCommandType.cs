@@ -26,5 +26,10 @@ public enum GCommandType
     GameGet,
     GameGetAll,
     GameModify,
-    PaymentMethodModify
+    PaymentMethodModify,
+    CartAdd,
+    CartItemAdd,
+    CartItemDelete,
+    CartItemGetAll,
+    CheckOut
 }

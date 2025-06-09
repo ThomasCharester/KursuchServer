@@ -13,6 +13,7 @@ namespace KursuchServer
         private Queue<Command> _commands = new();
         private Thread _commandExecutionThread;
         private static ServerApp instance = null;
+
         public static ServerApp Instance
         {
             get
@@ -26,10 +27,10 @@ namespace KursuchServer
         static void Main(string[] args)
         {
             InitializeServices();
-            
+
             Instance._commandExecutionThread = new Thread(Instance.CommandTaskExecution);
             Instance._commandExecutionThread.Start();
-            
+
             TCPConnectorService.Instance.StartServer();
         }
 
@@ -37,8 +38,15 @@ namespace KursuchServer
         {
             while (true)
             {
-                if(_commands.Count > 0) _commands.Dequeue().Execute();
-                else Thread.Sleep(100);
+                try
+                {
+                    if (_commands.Count > 0) _commands.Dequeue().Execute();
+                    else Thread.Sleep(100);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 

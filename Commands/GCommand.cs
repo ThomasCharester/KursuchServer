@@ -33,12 +33,6 @@ public class GCommand : Command
                 case GCommandType.SellerGetAll:
                     GoodsService.Instance.RequestGetAllSeller(this);
                     break;
-                // case GCommandType.AquireTypeGet:
-                //     GoodsService.Instance.RequestGetAquireType(this);
-                //     break;
-                // case GCommandType.AquireTypeGetAll:
-                //     GoodsService.Instance.RequestGetAllAquireType(this);
-                //     break;
                 case GCommandType.PaymentMethodGet:
                     GoodsService.Instance.RequestGetPaymentMethod(this);
                     break;
@@ -63,6 +57,33 @@ public class GCommand : Command
                 case GCommandType.GoodGetAllSeller:
                     GoodsService.Instance.RequestGetAllGoodsSeller(this);
                     break;
+                case GCommandType.GoodAdd:
+                    GoodsService.Instance.RequestAddGood(this);
+                    break;
+                case GCommandType.GoodDelete:
+                    GoodsService.Instance.RequestDeleteGood(this);
+                    break;
+                case GCommandType.GoodModifySeller:
+                    GoodsService.Instance.RequestModifyGood(this);
+                    break;
+                case GCommandType.GoodDeleteSeller:
+                    GoodsService.Instance.RequestDeleteGoodSeller(this);
+                    break;
+                case GCommandType.CartAdd:
+                    GoodsService.Instance.RequestAddCart(this);
+                    break;
+                case GCommandType.CartItemAdd:
+                    GoodsService.Instance.RequestAddCartItem(this);
+                    break;
+                case GCommandType.CartItemDelete:
+                    GoodsService.Instance.RequestDeleteCartItem(this);
+                    break;
+                case GCommandType.CartItemGetAll:
+                    GoodsService.Instance.RequestGetAllUserCartItem(this);
+                    break;
+                case GCommandType.CheckOut:
+                    GoodsService.Instance.RequestCheckout(this);
+                    break;
             }
 
             var client = AccountService.Instance.GetClient(Client);
@@ -79,20 +100,8 @@ public class GCommand : Command
                 case GCommandType.SellerModify:
                     GoodsService.Instance.RequestModifySeller(this);
                     break;
-                case GCommandType.GoodAdd:
-                    GoodsService.Instance.RequestAddGood(this);
-                    break;
-                case GCommandType.GoodDelete:
-                    GoodsService.Instance.RequestDeleteGood(this);
-                    break;
-                case GCommandType.GoodModifySeller:
-                    GoodsService.Instance.RequestModifyGood(this);
-                    break;
                 case GCommandType.GoodDeleteAP:
                     GoodsService.Instance.RequestDeleteGoodAP(this);
-                    break;
-                case GCommandType.GoodDeleteSeller:
-                    GoodsService.Instance.RequestDeleteGoodSeller(this);
                     break;
                 // case GCommandType.AquireTypeAdd:
                 //     GoodsService.Instance.RequestAddAquireType(this);

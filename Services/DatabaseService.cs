@@ -329,4 +329,25 @@ public class DatabaseService
             return false;
         }
     }
+    
+    public async Task<bool> ExecuteFunction(String query) // Ф-Я,З-Е
+    {
+        try
+        {
+            await using var dataSource = NpgsqlDataSource.Create(_connectionString);
+
+            await using (var cmd = dataSource.CreateCommand(
+                             $"SELECT {query.Split(DataParsingExtension.QuerySplitter)[1]}({query.Split(DataParsingExtension.QuerySplitter)[2]});"))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ew;{ex.Message}");
+            return false;
+        }
+    }
 }

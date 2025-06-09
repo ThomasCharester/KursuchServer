@@ -16,13 +16,71 @@ public class GoodsService
         private set { instance = value; }
     }
 
-    private List<Good> _cart;
-
-    public void AddToCart(Good good)
+    public void RequestAddCart(GCommand data) //
     {
-        _cart.Add(good);
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"gca;{data.Query};accountLogin;{DataParsingExtension.CTableName}",
+                DBCommandType.ValueAdd,
+                TCPConnectorService.Instance.GenericResult));
+    }
+    public void RequestAddCartItem(GCommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[0] +
+                                       ";accountLogin;" + DataParsingExtension.CTableName +
+                                       DataParsingExtension.AdditionalQuerySplitter
+                                       + data.Query.Split(DataParsingExtension.AdditionalQuerySplitter)[1],
+                DBCommandType.ValueGetFirstElementQuery,
+                ProcessAddCartItem));
     }
 
+    public void ProcessAddCartItem(Object dataObj) //
+    {
+        DBCommand data = (DBCommand)dataObj;
+        var cart = (string)data.Output;
+        if (cart == "ERR") return;
+        
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"gcia;{cart.Split(DataParsingExtension.ValueSplitter)[0]},{data.Query};cartId,goodName,quantity;{DataParsingExtension.CITableName}",
+                DBCommandType.ValueAdd,
+                TCPConnectorService.Instance.GenericResult));
+    }
+    public void RequestCheckout(GCommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"gco;checkout_cart;{data.Query}",
+                DBCommandType.ExecuteFunction,
+                TCPConnectorService.Instance.GenericResult));
+    }
+    public void RequestDeleteCartItem(GCommand data) //
+    {
+        ServerApp.Instance.AddCommand(new DBCommand(data.Client,
+            $"gcid;{data.Query};cartId,cartItemID;{DataParsingExtension.CITableName}",
+            DBCommandType.ValueDelete,
+            TCPConnectorService.Instance.GenericResult));
+    }
+    public void RequestGetAllUserCartItem(GCommand data) //
+    {
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client, data.Query +
+                                       ";accountLogin;" + DataParsingExtension.CTableName,
+                DBCommandType.ValueGet,
+                ProcessGetAllUserCartItem));
+    }
+    public void ProcessGetAllUserCartItem(Object dataObj) //
+    {
+        DBCommand data = (DBCommand)dataObj;
+        var cart = (string)data.Output;
+        if (cart == "ERR") return;
+
+        ServerApp.Instance.AddCommand(
+            new DBCommand(data.Client,
+                $"lc{DataParsingExtension.QuerySplitter}*{DataParsingExtension.QuerySplitter}{DataParsingExtension.CITableName}{DataParsingExtension.QuerySplitter}{cart.Split(DataParsingExtension.ValueSplitter)[0]}{DataParsingExtension.QuerySplitter}cartID",
+                DBCommandType.ValueGetAllCondition, TCPConnectorService.Instance.GenericGetAllResult));
+    }
     public void RequestAddGood(GCommand data) //
     {
         ServerApp.Instance.AddCommand(

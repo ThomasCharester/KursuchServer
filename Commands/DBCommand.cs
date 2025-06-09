@@ -75,6 +75,12 @@ public class DBCommand : Command
                     if (!DatabaseService.Instance.CheckDataAnyTable(Query).Result) Query = "ERR";
                 }
                     break;
+                
+                case DBCommandType.ExecuteFunction:
+                {
+                    if (!DatabaseService.Instance.ExecuteFunction(Query).Result) Query = "ERR";
+                }
+                    break;
             }
 
             OutputFunc(this);

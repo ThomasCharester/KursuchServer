@@ -16,13 +16,8 @@ public static class DataParsingExtension
     public static readonly String PMTableName = "PaymentMethod";
     public static readonly String STableName = "Sellers";
     public static readonly String GOTableName = "Goods";
-
-    public const string DiseasesTable = "Diseases";
-    public const string MedicinesTable = "Medicines";
-    public const string PlantsTable = "Plants";
-    public const string MedicineDiseasesTable = "MedicineDiseases";
-    public const string PlantMedicinesTable = "PlantMedicines";
-    public const string DosagesTable = "Dosages";
+    public static readonly String CTableName = "Carts";
+    public static readonly String CITableName = "CartItems";
 
     public static String DBReadable(this String str)
     {

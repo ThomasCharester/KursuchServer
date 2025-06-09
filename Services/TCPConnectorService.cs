@@ -399,6 +399,42 @@ public class TCPConnectorService
                         }
 
                         break;
+                    case 'c': // cart
+                        switch (request[2])
+                        {
+                            case 'o':
+                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    GCommandType.CheckOut));
+                                break;
+                            case 'a':
+                                ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                    request.Split(DataParsingExtension.QuerySplitter)[1],
+                                    GCommandType.CartAdd));
+                                break;
+                            case 'i':
+                                switch (request[3])
+                                {
+                                    case 'l':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.CartItemGetAll));
+                                        break;
+                                    case 'd':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Split(DataParsingExtension.QuerySplitter)[1],
+                                            GCommandType.CartItemDelete));
+                                        break;
+                                    case 'a':
+                                        ServerApp.Instance.AddCommand(new GCommand(tcpClient,
+                                            request.Remove(0, request.IndexOf(DataParsingExtension.QuerySplitter) + 1),
+                                            GCommandType.CartItemAdd));
+                                        break;
+                                }
+                                break;
+                        }
+
+                        break;
                 }
             }
                 break;

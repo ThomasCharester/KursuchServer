@@ -144,6 +144,10 @@ public class AccountService
         ServerApp.Instance.AddCommand(new DBCommand(data.Client,
             $"rs;{data.Query};login,password,adminKey;{DataParsingExtension.ATableName}",
             DBCommandType.ValueAdd, TCPConnectorService.Instance.GenericResult));
+        
+        ServerApp.Instance.AddCommand(new GCommand(data.Client,
+            data.Query.Split(DataParsingExtension.ValueSplitter)[0],
+            GCommandType.CartAdd));
     }
 
     public void RequestModify(ACommand data) //
